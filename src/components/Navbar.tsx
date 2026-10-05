@@ -6,6 +6,7 @@ import {
   ChevronDown,
   CreditCard,
   ArrowLeft,
+  Menu,
 } from "lucide-react";
 
 interface NavbarProps {
@@ -13,6 +14,7 @@ interface NavbarProps {
   setEnvironment: (env: "sandbox" | "live") => void;
   kybApproved: boolean;
   onOpenCheckoutModal: () => void;
+  onToggleSidebar?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -20,19 +22,29 @@ export const Navbar: React.FC<NavbarProps> = ({
   setEnvironment,
   kybApproved,
   onOpenCheckoutModal,
+  onToggleSidebar,
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-[#F6F4EE]/95 backdrop-blur-md border-b border-[#E3E5E2] transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-[62px]">
           {/* Brand Logo & Organization */}
-          <div className="flex items-center space-x-5">
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* Mobile Hamburger Drawer Trigger */}
+            <button
+              onClick={onToggleSidebar}
+              className="lg:hidden p-1.5 text-[#0B3E33] hover:text-black rounded-lg focus:outline-none hover:bg-black/5 active:scale-95 transition-transform"
+              aria-label="Ouvrir le menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+
             <Link
               href="/"
-              className="flex items-center space-x-3 cursor-pointer group"
+              className="flex items-center space-x-2.5 cursor-pointer group"
               title="Retour à l'accueil"
             >
-              <div className="relative w-[40px] h-[36px] flex items-center justify-center">
+              <div className="relative w-[34px] sm:w-[40px] h-[32px] sm:h-[36px] flex items-center justify-center">
                 <Image
                   src="/images/kusa-logo-icon.png"
                   alt="KUSA Logo"
@@ -76,21 +88,22 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Center: Environment Toggle Switcher */}
-          <div className="flex items-center bg-[#EAE8E0] p-1 rounded-full border border-[#DCDAD0] shadow-inner">
+          <div className="flex items-center bg-[#EAE8E0] p-0.5 sm:p-1 rounded-full border border-[#DCDAD0] shadow-inner">
             <button
               onClick={() => setEnvironment("sandbox")}
-              className={`flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-jura transition-all ${
+              className={`flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-jura transition-all ${
                 environment === "sandbox"
                   ? "bg-[#DBAE40] text-[#101E29] font-bold shadow-xs"
                   : "text-[#78848A] hover:text-[#0B3E33] font-medium"
               }`}
             >
               <span
-                className={`w-2 h-2 rounded-full ${
+                className={`w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full ${
                   environment === "sandbox" ? "bg-[#101E29]" : "bg-amber-500"
                 }`}
               />
-              <span>Sandbox (Test)</span>
+              <span className="hidden sm:inline">Sandbox (Test)</span>
+              <span className="sm:hidden">Test</span>
             </button>
 
             <button
@@ -103,7 +116,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   );
                 }
               }}
-              className={`flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-jura transition-all ${
+              className={`flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-jura transition-all ${
                 environment === "live"
                   ? "bg-[#0B3E33] text-white font-bold shadow-xs"
                   : kybApproved
@@ -112,7 +125,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }`}
             >
               <span
-                className={`w-2 h-2 rounded-full ${
+                className={`w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full ${
                   environment === "live"
                     ? "bg-white"
                     : kybApproved
@@ -120,9 +133,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                     : "bg-gray-400"
                 }`}
               />
-              <span>Production (Live)</span>
+              <span className="hidden sm:inline">Production (Live)</span>
+              <span className="sm:hidden">Live</span>
               {!kybApproved && (
-                <span className="text-[9px] px-1.5 py-0.2 bg-[#DCDAD0] rounded-full text-[#78848A] font-semibold">
+                <span className="text-[9px] px-1 py-0.2 bg-[#DCDAD0] rounded-full text-[#78848A] font-semibold">
                   KYB
                 </span>
               )}
@@ -130,24 +144,26 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Right: Quick Actions, Checkout Demo & User */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-1.5 sm:space-x-3">
             {/* Live Interactive Checkout Trigger */}
             <button
               onClick={onOpenCheckoutModal}
-              className="flex items-center space-x-2 bg-[#0B3E33] hover:bg-[#101E29] text-white font-jura font-semibold text-xs px-4 py-2 rounded-full shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="flex items-center space-x-1.5 sm:space-x-2 bg-[#0B3E33] hover:bg-[#101E29] text-white font-jura font-semibold text-xs px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98]"
+              title="Tester le widget de paiement"
             >
               <CreditCard className="w-3.5 h-3.5 text-[#DBAE40]" />
-              <span>Tester le Checkout</span>
+              <span className="hidden md:inline">Tester le Checkout</span>
+              <span className="hidden xs:inline md:hidden">Checkout</span>
             </button>
 
             {/* Notification Bell */}
-            <button className="relative p-2 text-[#78848A] hover:text-[#0B3E33] rounded-full hover:bg-[#E8E6DE] transition-colors">
+            <button className="relative p-1.5 sm:p-2 text-[#78848A] hover:text-[#0B3E33] rounded-full hover:bg-[#E8E6DE] transition-colors">
               <Bell className="w-4 h-4" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#DBAE40] rounded-full ring-2 ring-[#F6F4EE]" />
             </button>
 
             {/* User Avatar */}
-            <div className="w-8 h-8 rounded-full bg-[#0B3E33] flex items-center justify-center text-xs font-jura font-bold text-white border border-[#DBAE40]/50 shadow-xs cursor-pointer">
+            <div className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-[#0B3E33] flex items-center justify-center text-[10px] sm:text-xs font-jura font-bold text-white border border-[#DBAE40]/50 shadow-xs cursor-pointer">
               KW
             </div>
           </div>

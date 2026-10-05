@@ -1,5 +1,12 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#0B3E33",
+};
 
 export const metadata: Metadata = {
   title: "KUSA — L'Infrastructure de Paiement des Entreprises Africaines",
@@ -26,7 +33,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="min-h-full flex flex-col bg-[#F8F9FA] text-[#0D1B2A] antialiased selection:bg-[#D4AF37]/30 selection:text-[#0D1B2A]">
+      <body className="min-h-full flex flex-col bg-[#F8F9FA] text-[#0D1B2A] antialiased selection:bg-[#D4AF37]/30 selection:text-[#0D1B2A] overflow-x-hidden">
         {children}
       </body>
     </html>

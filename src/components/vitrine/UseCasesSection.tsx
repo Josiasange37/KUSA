@@ -31,46 +31,39 @@ export const UseCasesSection: React.FC = () => {
   return (
     <section
       id="usecases"
-      className="w-full bg-[#F6F4EE] flex justify-center py-[60px] lg:py-[76px] overflow-hidden"
+      className="w-full bg-[#F6F4EE] flex justify-center py-12 sm:py-16 lg:py-[76px] overflow-hidden"
       style={{
         boxSizing: "border-box",
       }}
     >
-      {/* Container: width 1252px, padding: 76px 57px 76px 86px, gap: 120px */}
+      {/* Container: responsive padding and gap */}
       <div
-        className="w-full max-w-[1252px] flex flex-col lg:flex-row items-center justify-between"
+        className="w-full max-w-[1252px] flex flex-col lg:flex-row items-center justify-between px-4 sm:px-8 lg:pl-[86px] lg:pr-[57px] gap-8 sm:gap-12 lg:gap-[80px] xl:gap-[120px]"
         style={{
           boxSizing: "border-box",
-          padding: "0px 57px 0px 86px",
-          gap: "120px",
         }}
       >
-        {/* Left Column: Photograph Frame (width: 550px, height: 404px to 505px, border-radius: 55px matching Figma image 10) */}
+        {/* Left Column: Photograph Frame */}
         <ScrollReveal direction="right" delay={100} distance={30} duration={800} className="w-full max-w-[550px] flex-none">
           <div
-            className="relative flex-none flex items-center justify-center w-full max-w-[550px] overflow-hidden rounded-[55px] shadow-sm transition-transform hover:scale-[1.01] duration-300"
+            className="relative flex-none flex items-center justify-center w-full max-w-[550px] overflow-hidden rounded-[24px] sm:rounded-[36px] lg:rounded-[55px] shadow-sm transition-transform hover:scale-[1.01] duration-300 mx-auto"
             style={{
               boxSizing: "border-box",
-              borderRadius: "55px",
             }}
           >
             <img
               src="/images/usecase-retail-photo.jpg"
               alt="Commerçante encaissant avec TPE et smartphone"
-              className="w-full h-auto object-cover object-center rounded-[55px]"
-              style={{
-                borderRadius: "55px",
-              }}
+              className="w-full h-auto object-cover object-center rounded-[24px] sm:rounded-[36px] lg:rounded-[55px]"
               loading="lazy"
             />
           </div>
         </ScrollReveal>
 
-        {/* Right Column: Use case content (width: 439px, gap: 16px) */}
+        {/* Right Column: Use case content */}
         <div
-          className="flex flex-col items-start w-full lg:w-[439px] flex-none"
+          className="flex flex-col items-start w-full lg:w-[439px] flex-none gap-4"
           style={{
-            gap: "16px",
             boxSizing: "border-box",
           }}
         >

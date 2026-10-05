@@ -54,25 +54,21 @@ export const BentoFeatures: React.FC = () => {
   return (
     <section
       id="produits"
-      className="w-full bg-[#F6F4EE] flex justify-center py-[60px] lg:py-[76px] px-6 sm:px-12 lg:px-0"
+      className="w-full bg-[#F6F4EE] flex justify-center py-12 sm:py-16 lg:py-[76px] px-4 sm:px-8 xl:px-0"
       style={{
         boxSizing: "border-box",
       }}
     >
       {/* Produits Section Container: max-w-[1309px] centered */}
       <div
-        className="w-full max-w-[1309px] flex flex-col items-start"
+        className="w-full max-w-[1309px] flex flex-col items-start gap-7 sm:gap-9"
         style={{
           boxSizing: "border-box",
-          gap: "37px",
         }}
       >
         {/* Section Introduction (max-width: 540px, gap: 15px) */}
         <div
-          className="flex flex-col items-start w-full max-w-[540px]"
-          style={{
-            gap: "15px",
-          }}
+          className="flex flex-col items-start w-full max-w-[540px] gap-3 sm:gap-4"
         >
           {/* Section label: PRODUITS — Roboto Mono 400, 11px */}
           <ScrollReveal direction="down" delay={40} distance={15}>
@@ -95,7 +91,7 @@ export const BentoFeatures: React.FC = () => {
           {/* Heading — Junge 400, 32px, line-height 115% */}
           <ScrollReveal direction="up" delay={100} distance={20}>
             <h2
-              className="text-[28px] sm:text-[32px]"
+              className="text-[26px] sm:text-[32px] break-words"
               style={{
                 fontFamily: "'Junge', serif",
                 fontStyle: "normal",
@@ -113,11 +109,11 @@ export const BentoFeatures: React.FC = () => {
           {/* Description — Jura 700, 15px, line-height 150% */}
           <ScrollReveal direction="up" delay={160} distance={18}>
             <p
+              className="text-[14px] sm:text-[15px]"
               style={{
                 fontFamily: "'Jura', sans-serif",
                 fontStyle: "normal",
                 fontWeight: 700,
-                fontSize: "15px",
                 lineHeight: "150%",
                 color: "#78848A",
               }}
@@ -130,9 +126,8 @@ export const BentoFeatures: React.FC = () => {
 
         {/* Product Offerings Row: 3 cards, gap 20px, stretch to fill with staggered reveal */}
         <div
-          className="grid grid-cols-1 md:grid-cols-3 w-full"
+          className="grid grid-cols-1 md:grid-cols-3 w-full gap-5"
           style={{
-            gap: "20px",
             boxSizing: "border-box",
           }}
         >
@@ -145,10 +140,9 @@ export const BentoFeatures: React.FC = () => {
               className="w-full"
             >
               <div
-                className="relative flex flex-col items-start bg-[#FFFFFF] transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-[#0B3E33]/30 cursor-pointer h-full"
+                className="relative flex flex-col items-start bg-[#FFFFFF] transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-[#0B3E33]/30 cursor-pointer h-full p-5 sm:p-6"
                 style={{
                   boxSizing: "border-box",
-                  padding: "24px",
                   gap: "18px",
                   isolation: "isolate",
                   border: "1px solid #E3E5E2",

@@ -76,25 +76,18 @@ export const DeveloperSection: React.FC = () => {
         aria-hidden="true"
       />
 
-      {/* Centered Content Frame: width 1309px x min-height 481px */}
+      {/* Centered Content Frame: responsive padding and gap */}
       <div
-        className="relative z-20 w-full max-w-[1309px] min-h-[481px] flex flex-col lg:flex-row items-center justify-between"
+        className="relative z-20 w-full max-w-[1309px] min-h-[481px] flex flex-col lg:flex-row items-center justify-between py-12 sm:py-16 lg:py-[76px] px-4 sm:px-8 lg:px-12 xl:pl-[168px] xl:pr-[123px] gap-10 lg:gap-[82px]"
         style={{
           boxSizing: "border-box",
-          padding: "76px 123px 107px 168px",
-          gap: "82px",
           isolation: "isolate",
         }}
       >
 
-        {/* Layer 2: Left Column: Developer Copy & Features (width: 440px, height: 320px) */}
+        {/* Layer 2: Left Column: Developer Copy & Features */}
         <div
-          className="flex flex-col items-start w-full lg:w-[440px] flex-none"
-          style={{
-            zIndex: 2,
-            gap: "16px",
-            boxSizing: "border-box",
-          }}
+          className="flex flex-col items-start w-full lg:w-[440px] flex-none z-10 gap-4"
         >
           {/* Section label: Roboto 400, 11px, line-height 13px, #DBAE40 */}
           <ScrollReveal direction="down" delay={40} distance={15}>
@@ -117,7 +110,7 @@ export const DeveloperSection: React.FC = () => {
           {/* Heading: Jura 700, 32px, line-height 115%, #F0F2F2 */}
           <ScrollReveal direction="up" delay={100} distance={20}>
             <h2
-              className="text-[28px] sm:text-[32px]"
+              className="text-[26px] sm:text-[32px] break-words"
               style={{
                 fontFamily: "'Jura', sans-serif",
                 fontStyle: "normal",
@@ -137,11 +130,11 @@ export const DeveloperSection: React.FC = () => {
           {/* Description: Roboto 300, 15px, line-height 150%, #A1AFBA */}
           <ScrollReveal direction="up" delay={160} distance={18}>
             <p
+              className="text-[14px] sm:text-[15px]"
               style={{
                 fontFamily: "'Roboto', sans-serif",
                 fontStyle: "normal",
                 fontWeight: 300,
-                fontSize: "15px",
                 lineHeight: "150%",
                 color: "#A1AFBA",
                 width: "100%",
@@ -154,148 +147,65 @@ export const DeveloperSection: React.FC = () => {
             </p>
           </ScrollReveal>
 
-          {/* Developer features grid: 440px width x 140px height, padding-top: 8px, gap: 10px */}
-          <div
-            className="flex flex-col items-start w-full max-w-[440px]"
-            style={{
-              paddingTop: "8px",
-              gap: "10px",
-              boxSizing: "border-box",
-            }}
-          >
-            {/* Feature row 0: gap 12px, height 62px */}
-            <div
-              className="flex flex-row items-start w-full"
-              style={{
-                gap: "12px",
-                boxSizing: "border-box",
-              }}
-            >
-              {topRowFeatures.map((feat, idx) => (
-                <ScrollReveal
-                  key={idx}
-                  direction="up"
-                  delay={220 + idx * 80}
-                  distance={18}
-                  className="flex-1"
+          {/* Developer features grid: responsive 2 columns */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-[440px] pt-2">
+            {[...topRowFeatures, ...bottomRowFeatures].map((feat, idx) => (
+              <ScrollReveal
+                key={idx}
+                direction="up"
+                delay={220 + idx * 60}
+                distance={18}
+                className="w-full"
+              >
+                <div
+                  className="flex flex-col items-start w-full transition-all duration-300 hover:bg-white/[0.07] hover:border-white/20 cursor-pointer p-3 sm:p-3.5 gap-1"
+                  style={{
+                    boxSizing: "border-box",
+                    minHeight: "62px",
+                    background: "rgba(255, 255, 255, 0.0313726)",
+                    border: "1px solid rgba(255, 255, 255, 0.0784314)",
+                    borderRadius: "12px",
+                  }}
                 >
-                  <div
-                    className="flex flex-col items-start w-full transition-all duration-300 hover:bg-white/[0.07] hover:border-white/20 cursor-pointer"
+                  <span
                     style={{
-                      boxSizing: "border-box",
-                      minHeight: "62px",
-                      padding: "12px 14px",
-                      gap: "4px",
-                      background: "rgba(255, 255, 255, 0.0313726)",
-                      border: "1px solid rgba(255, 255, 255, 0.0784314)",
-                      borderRadius: "12px",
+                      fontFamily: "'Jura', sans-serif",
+                      fontStyle: "normal",
+                      fontWeight: 600,
+                      fontSize: "12.5px",
+                      lineHeight: "145%",
+                      color: "#CED6DB",
+                      whiteSpace: "nowrap",
                     }}
                   >
-                    {/* Card Title: Jura 400, 12.5px, line-height 145%, #CED6DB */}
-                    <span
-                      style={{
-                        fontFamily: "'Jura', sans-serif",
-                        fontStyle: "normal",
-                        fontWeight: 600,
-                        fontSize: "12.5px",
-                        lineHeight: "145%",
-                        color: "#CED6DB",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {feat.title}
-                    </span>
+                    {feat.title}
+                  </span>
 
-                    {/* Card Description: Inter 400, 11px, line-height 140%, #91A0AB */}
-                    <span
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontStyle: "normal",
-                        fontWeight: 400,
-                        fontSize: "11px",
-                        lineHeight: "140%",
-                        color: "#91A0AB",
-                      }}
-                    >
-                      {feat.description}
-                    </span>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
-
-            {/* Feature row 1: gap 12px, height 62px */}
-            <div
-              className="flex flex-row items-start w-full"
-              style={{
-                gap: "12px",
-                boxSizing: "border-box",
-              }}
-            >
-              {bottomRowFeatures.map((feat, idx) => (
-                <ScrollReveal
-                  key={idx}
-                  direction="up"
-                  delay={360 + idx * 80}
-                  distance={18}
-                  className="flex-1"
-                >
-                  <div
-                    className="flex flex-col items-start w-full transition-all duration-300 hover:bg-white/[0.07] hover:border-white/20 cursor-pointer"
+                  <span
                     style={{
-                      boxSizing: "border-box",
-                      minHeight: "62px",
-                      padding: "12px 14px",
-                      gap: "4px",
-                      background: "rgba(255, 255, 255, 0.0313726)",
-                      border: "1px solid rgba(255, 255, 255, 0.0784314)",
-                      borderRadius: "12px",
+                      fontFamily: "'Inter', sans-serif",
+                      fontStyle: "normal",
+                      fontWeight: 400,
+                      fontSize: "11px",
+                      lineHeight: "140%",
+                      color: "#91A0AB",
                     }}
                   >
-                    {/* Card Title: Jura 400, 12.5px, line-height 145%, #CED6DB */}
-                    <span
-                      style={{
-                        fontFamily: "'Jura', sans-serif",
-                        fontStyle: "normal",
-                        fontWeight: 600,
-                        fontSize: "12.5px",
-                        lineHeight: "145%",
-                        color: "#CED6DB",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {feat.title}
-                    </span>
-
-                    {/* Card Description: Inter 400, 11px, line-height 140%, #91A0AB */}
-                    <span
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontStyle: "normal",
-                        fontWeight: 400,
-                        fontSize: "11px",
-                        lineHeight: "140%",
-                        color: "#91A0AB",
-                      }}
-                    >
-                      {feat.description}
-                    </span>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
+                    {feat.description}
+                  </span>
+                </div>
+              </ScrollReveal>
+            ))}
           </div>
         </div>
 
-        {/* Layer 3: Right Column: API Code Window (width: 521px, height: 328px) */}
+        {/* Layer 3: Right Column: API Code Window (responsive width) */}
         <ScrollReveal direction="left" delay={200} distance={30} duration={750} className="w-full max-w-[521px] flex-none">
           <div
-            className="flex flex-col items-start w-full max-w-[521px] flex-none transition-shadow hover:shadow-[0_20px_50px_rgba(0,0,0,0.6)] duration-300"
+            className="flex flex-col items-start w-full max-w-[521px] transition-shadow hover:shadow-[0_20px_50px_rgba(0,0,0,0.6)] duration-300"
             style={{
               zIndex: 3,
               boxSizing: "border-box",
-              width: "521px",
-              height: "328px",
               background: "#07131E",
               border: "1px solid rgba(255, 255, 255, 0.054902)",
               borderRadius: "18px",
@@ -369,14 +279,14 @@ export const DeveloperSection: React.FC = () => {
               boxSizing: "border-box",
             }}
           >
-            {/* Payment request: Roboto Mono 400, 13px, line-height 165% (21px), #ACBAC5 */}
+            {/* Payment request: Roboto Mono 400, responsive text */}
             <pre
+              className="text-[11px] sm:text-[13px]"
               style={{
                 margin: 0,
                 fontFamily: "'Roboto Mono', monospace",
                 fontStyle: "normal",
                 fontWeight: 400,
-                fontSize: "13px",
                 lineHeight: "165%",
                 color: "#ACBAC5",
                 whiteSpace: "pre",
@@ -388,7 +298,7 @@ export const DeveloperSection: React.FC = () => {
 
           {/* Response Output Box: height: 48px, padding: 14px 16px, border: 1px solid #17222C */}
           <div
-            className="w-full flex items-center"
+            className="w-full flex items-center overflow-x-auto"
             style={{
               boxSizing: "border-box",
               height: "48px",
@@ -396,13 +306,13 @@ export const DeveloperSection: React.FC = () => {
               borderTop: "1px solid #17222C",
             }}
           >
-            {/* Response Text: Roboto Mono 400, 15px, line-height 20px, #439764 */}
+            {/* Response Text: Roboto Mono 400, responsive */}
             <span
+              className="text-[12px] sm:text-[15px]"
               style={{
                 fontFamily: "'Roboto Mono', monospace",
                 fontStyle: "normal",
                 fontWeight: 400,
-                fontSize: "15px",
                 lineHeight: "20px",
                 color: "#439764",
                 whiteSpace: "nowrap",

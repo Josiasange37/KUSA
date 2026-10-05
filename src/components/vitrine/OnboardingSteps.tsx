@@ -31,20 +31,19 @@ export const OnboardingSteps: React.FC = () => {
   return (
     <section
       id="onboarding"
-      className="w-full bg-[#FFFFFF] flex justify-center py-[60px] lg:py-[76px] overflow-hidden"
+      className="w-full bg-[#FFFFFF] flex justify-center py-12 sm:py-16 lg:py-[76px] overflow-hidden"
       style={{
         boxSizing: "border-box",
       }}
     >
-      {/* Centered Container: width: 1309px, padding: 76px 213px (responsive), gap: 44px */}
+      {/* Centered Container: responsive padding and gap */}
       <div
-        className="w-full max-w-[1309px] flex flex-col items-start px-6 sm:px-12 xl:px-[213px]"
+        className="w-full max-w-[1309px] flex flex-col items-start px-4 sm:px-8 xl:px-[213px] gap-8 sm:gap-11"
         style={{
           boxSizing: "border-box",
-          gap: "44px",
         }}
       >
-        {/* Step introduction: width 500px, height 64px */}
+        {/* Step introduction */}
         <ScrollReveal direction="up" delay={50} distance={20}>
           <div
             className="flex flex-col items-start w-full max-w-[500px]"
@@ -54,7 +53,7 @@ export const OnboardingSteps: React.FC = () => {
           >
             {/* Heading: Junge 400, 32px, line-height 115%, #0B3E33 */}
             <h2
-              className="text-[28px] sm:text-[32px]"
+              className="text-[26px] sm:text-[32px] break-words"
               style={{
                 fontFamily: "'Junge', serif",
                 fontStyle: "normal",
@@ -72,9 +71,9 @@ export const OnboardingSteps: React.FC = () => {
           </div>
         </ScrollReveal>
 
-        {/* Onboarding steps row: width 883px, gap 32px with staggered reveal */}
+        {/* Onboarding steps row: responsive grid */}
         <div
-          className="grid grid-cols-1 md:grid-cols-3 gap-[32px] w-full max-w-[883px]"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 w-full max-w-[883px]"
           style={{
             boxSizing: "border-box",
           }}
@@ -85,10 +84,10 @@ export const OnboardingSteps: React.FC = () => {
               direction="up"
               delay={140 + idx * 120}
               distance={22}
-              className="w-full max-w-[273px]"
+              className="w-full md:max-w-[273px]"
             >
               <div
-                className="flex flex-col items-start w-full max-w-[273px] transition-transform hover:-translate-y-1 duration-200 cursor-pointer"
+                className="flex flex-col items-start w-full md:max-w-[273px] transition-transform hover:-translate-y-1 duration-200 cursor-pointer"
                 style={{
                   boxSizing: "border-box",
                   gap: "12px",

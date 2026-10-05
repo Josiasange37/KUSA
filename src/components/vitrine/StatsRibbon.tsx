@@ -16,7 +16,7 @@ export const StatsRibbon: React.FC = () => {
     <section className="w-full bg-[#FFFFFF] border-y border-[#DFE3E8] shadow-xs">
       {/* Full-bleed edge-to-edge white bar spanning 100% of the screen width */}
       <div
-        className="w-full max-w-[1440px] mx-auto min-h-[75px] flex flex-col lg:flex-row items-center justify-between px-6 sm:px-10 lg:px-16 py-3.5 lg:py-0 gap-4 lg:gap-8"
+        className="w-full max-w-[1440px] mx-auto min-h-[75px] flex flex-col lg:flex-row items-center justify-between px-4 sm:px-8 lg:px-16 py-4 lg:py-0 gap-4 lg:gap-8"
         style={{
           boxSizing: "border-box",
         }}
@@ -24,7 +24,7 @@ export const StatsRibbon: React.FC = () => {
         {/* Trust statement on the left */}
         <ScrollReveal direction="right" delay={50} distance={18}>
           <p
-            className="font-jura text-[14px] sm:text-[15px] lg:text-[16px] text-center lg:text-left flex-none tracking-tight whitespace-normal sm:whitespace-nowrap"
+            className="font-jura text-[13px] sm:text-[15px] lg:text-[16px] text-center lg:text-left flex-none tracking-tight whitespace-normal sm:whitespace-nowrap"
             style={{
               fontFamily: "'Jura', sans-serif",
               fontStyle: "normal",
@@ -38,7 +38,7 @@ export const StatsRibbon: React.FC = () => {
         </ScrollReveal>
 
         {/* 5 Partner logos horizontally aligned on the right with staggered reveal */}
-        <div className="flex flex-wrap items-center justify-center lg:justify-end gap-6 sm:gap-9 lg:gap-11 flex-1">
+        <div className="flex flex-wrap items-center justify-center lg:justify-end gap-5 sm:gap-8 lg:gap-11 flex-1 py-1">
           {partners.map((partner, index) => (
             <ScrollReveal
               key={partner.name}

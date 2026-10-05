@@ -153,7 +153,7 @@ export const DeveloperPortalView: React.FC<DeveloperPortalViewProps> = ({
 
       {/* API Keys Card */}
       <div className="bg-white p-6 rounded-2xl border border-[#E3E5E2] shadow-2xs space-y-5">
-        <div className="flex items-center justify-between border-b border-[#E3E5E2] pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#E3E5E2] pb-3 gap-3">
           <div>
             <h2 className="text-sm font-jura font-bold text-[#0B3E33] flex items-center space-x-2">
               <Key className="w-4 h-4 text-[#DBAE40]" />
@@ -166,7 +166,7 @@ export const DeveloperPortalView: React.FC<DeveloperPortalViewProps> = ({
 
           <button
             onClick={() => setShowRotationModal(true)}
-            className="text-xs font-jura font-semibold text-[#0B3E33] hover:text-[#DBAE40] flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full border border-[#E3E5E2] hover:border-[#0B3E33] transition-all bg-[#F6F4EE]"
+            className="text-xs font-jura font-semibold text-[#0B3E33] hover:text-[#DBAE40] flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full border border-[#E3E5E2] hover:border-[#0B3E33] transition-all bg-[#F6F4EE] self-start sm:self-center"
           >
             <RefreshCw className="w-3.5 h-3.5 text-[#DBAE40]" />
             <span>Régénérer / Rotation</span>
@@ -180,12 +180,12 @@ export const DeveloperPortalView: React.FC<DeveloperPortalViewProps> = ({
               Clé Publique (Publishable Key)
             </label>
             <div className="flex items-center space-x-2">
-              <div className="flex-1 px-3 py-2 bg-[#F6F4EE]/60 border border-[#E3E5E2] rounded-xl font-mono text-xs text-[#0B3E33] select-all">
+              <div className="flex-1 min-w-0 px-3 py-2 bg-[#F6F4EE]/60 border border-[#E3E5E2] rounded-xl font-mono text-xs text-[#0B3E33] select-all truncate">
                 {publicApiKey}
               </div>
               <button
                 onClick={() => copyToClipboard(publicApiKey, "public")}
-                className="px-3.5 py-2 bg-[#F6F4EE] hover:bg-[#EAE8E0] text-[#0B3E33] border border-[#E3E5E2] rounded-xl text-xs font-jura font-semibold flex items-center space-x-1.5 transition-colors"
+                className="px-3.5 py-2 bg-[#F6F4EE] hover:bg-[#EAE8E0] text-[#0B3E33] border border-[#E3E5E2] rounded-xl text-xs font-jura font-semibold flex items-center space-x-1.5 transition-colors shrink-0"
               >
                 {copiedKey === "public" ? (
                   <>
@@ -208,8 +208,8 @@ export const DeveloperPortalView: React.FC<DeveloperPortalViewProps> = ({
               Clé Secrète (Secret Key — Authentification Serveur)
             </label>
             <div className="flex items-center space-x-2">
-              <div className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl font-mono text-xs text-gray-800 flex items-center justify-between">
-                <span>
+              <div className="flex-1 min-w-0 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl font-mono text-xs text-gray-800 flex items-center justify-between gap-2 overflow-hidden">
+                <span className="truncate">
                   {showSecretKey
                     ? secretApiKey
                     : secretApiKey.substring(0, 10) + "••••••••••••••••••••••••••••"}
@@ -268,7 +268,7 @@ export const DeveloperPortalView: React.FC<DeveloperPortalViewProps> = ({
             <label className="block text-xs font-jura font-bold text-[#101E29] mb-1">
               URL de Réception des Webhooks (Endpoint HTTPS)
             </label>
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <input
                 type="text"
                 value={webhookUrl}
@@ -278,7 +278,7 @@ export const DeveloperPortalView: React.FC<DeveloperPortalViewProps> = ({
               <button
                 onClick={handleTestWebhook}
                 disabled={webhookTesting}
-                className="px-4 py-2 bg-[#0B3E33] hover:bg-[#101E29] text-white font-jura font-semibold rounded-full text-xs flex items-center space-x-1.5 transition-colors shrink-0 shadow-xs"
+                className="px-4 py-2 bg-[#0B3E33] hover:bg-[#101E29] text-white font-jura font-semibold rounded-full text-xs flex items-center justify-center space-x-1.5 transition-colors shrink-0 shadow-xs self-start sm:self-center"
               >
                 <Send className="w-3.5 h-3.5 text-[#DBAE40]" />
                 <span>{webhookTesting ? "Envoi..." : "Tester l'URL"}</span>
@@ -297,12 +297,12 @@ export const DeveloperPortalView: React.FC<DeveloperPortalViewProps> = ({
               Secret de Signature Webhook (HMAC-SHA256)
             </label>
             <div className="flex items-center space-x-2">
-              <div className="flex-1 px-3 py-2 bg-[#F6F4EE]/60 border border-[#E3E5E2] rounded-xl font-mono text-xs text-[#0B3E33]">
+              <div className="flex-1 min-w-0 px-3 py-2 bg-[#F6F4EE]/60 border border-[#E3E5E2] rounded-xl font-mono text-xs text-[#0B3E33] truncate">
                 {webhookSecret}
               </div>
               <button
                 onClick={() => copyToClipboard(webhookSecret, "webhook")}
-                className="px-3.5 py-2 bg-[#F6F4EE] hover:bg-[#EAE8E0] text-[#0B3E33] border border-[#E3E5E2] rounded-xl text-xs font-jura font-semibold flex items-center space-x-1.5"
+                className="px-3.5 py-2 bg-[#F6F4EE] hover:bg-[#EAE8E0] text-[#0B3E33] border border-[#E3E5E2] rounded-xl text-xs font-jura font-semibold flex items-center space-x-1.5 shrink-0"
               >
                 {copiedKey === "webhook" ? (
                   <Check className="w-3.5 h-3.5 text-emerald-600" />
@@ -333,7 +333,7 @@ export const DeveloperPortalView: React.FC<DeveloperPortalViewProps> = ({
           </div>
         </div>
 
-        <div className="border border-[#E3E5E2] rounded-2xl overflow-hidden">
+        <div className="border border-[#E3E5E2] rounded-2xl overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-[#F6F4EE] text-[#5F6A70] font-jura border-b border-[#E3E5E2]">
               <tr>

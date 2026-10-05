@@ -14,13 +14,10 @@ export const VitrineFooter: React.FC = () => {
         boxSizing: "border-box",
       }}
     >
-      {/* Outer frame: padding 80px 100px 32px 95px, gap 30px */}
+      {/* Outer frame: responsive padding and gap */}
       <div
-        className="w-full max-w-[1309px] flex flex-col items-start px-6 sm:px-12 lg:px-[95px] xl:px-[100px]"
+        className="w-full max-w-[1309px] flex flex-col items-start px-4 sm:px-8 lg:px-[95px] xl:px-[100px] pt-12 sm:pt-20 pb-8 gap-7 sm:gap-8"
         style={{
-          paddingTop: "80px",
-          paddingBottom: "32px",
-          gap: "30px",
           boxSizing: "border-box",
         }}
       >

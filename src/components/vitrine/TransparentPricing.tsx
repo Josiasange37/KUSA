@@ -19,32 +19,29 @@ export const TransparentPricing: React.FC = () => {
   return (
     <section
       id="tarifs"
-      className="w-full bg-[#F6F4EE] flex justify-center py-[60px] lg:py-[76px] overflow-hidden"
+      className="w-full bg-[#F6F4EE] flex justify-center py-12 sm:py-16 lg:py-[76px] overflow-hidden"
       style={{
         boxSizing: "border-box",
       }}
     >
-      {/* Outer Section Frame: width 1309px, padding: 76px 213px (responsive), gap: 76px */}
+      {/* Outer Section Frame: responsive padding and gap */}
       <div
-        className="w-full max-w-[1309px] flex flex-col items-center px-6 sm:px-12 xl:px-[213px]"
+        className="w-full max-w-[1309px] flex flex-col items-center px-4 sm:px-8 xl:px-[213px] gap-12 sm:gap-16"
         style={{
           boxSizing: "border-box",
-          gap: "76px",
         }}
       >
-        {/* Top Part: Pricing block (width 883px, height 348px, gap: 50px) */}
+        {/* Top Part: Pricing block */}
         <div
-          className="w-full max-w-[883px] flex flex-col lg:flex-row items-center justify-between"
+          className="w-full max-w-[883px] flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-12"
           style={{
             boxSizing: "border-box",
-            gap: "50px",
           }}
         >
-          {/* Left Column: Pricing details (width 371px, height 269px, gap 17px) */}
+          {/* Left Column: Pricing details */}
           <div
-            className="flex flex-col items-start w-full lg:w-[380px] flex-none"
+            className="flex flex-col items-start w-full lg:w-[380px] flex-none gap-4"
             style={{
-              gap: "17px",
               boxSizing: "border-box",
             }}
           >
@@ -69,7 +66,7 @@ export const TransparentPricing: React.FC = () => {
             {/* Heading: Jura 400, 32px, line-height 115%, #0B3E33 */}
             <ScrollReveal direction="up" delay={100} distance={20}>
               <h2
-                className="text-[28px] sm:text-[32px]"
+                className="text-[26px] sm:text-[32px] break-words"
                 style={{
                   fontFamily: "'Jura', sans-serif",
                   fontStyle: "normal",
@@ -89,11 +86,11 @@ export const TransparentPricing: React.FC = () => {
             {/* Description: Inter 400, 15px, line-height 150%, #78848A */}
             <ScrollReveal direction="up" delay={160} distance={18}>
               <p
+                className="text-[14px] sm:text-[15px]"
                 style={{
                   fontFamily: "'Inter', sans-serif",
                   fontStyle: "normal",
                   fontWeight: 400,
-                  fontSize: "15px",
                   lineHeight: "150%",
                   color: "#78848A",
                   width: "100%",
@@ -107,10 +104,8 @@ export const TransparentPricing: React.FC = () => {
 
             {/* Included benefits: width 380px, padding-top 10px, gap 10px */}
             <div
-              className="flex flex-col items-start w-full max-w-[380px]"
+              className="flex flex-col items-start w-full max-w-[380px] pt-2 gap-2.5"
               style={{
-                paddingTop: "10px",
-                gap: "10px",
                 boxSizing: "border-box",
               }}
             >
@@ -123,11 +118,9 @@ export const TransparentPricing: React.FC = () => {
                   className="w-full"
                 >
                   <div
-                    className="flex flex-row items-center w-full transition-transform hover:translate-x-1 duration-200"
+                    className="flex flex-row items-center w-full transition-transform hover:translate-x-1 duration-200 gap-2.5 min-h-[22px]"
                     style={{
                       boxSizing: "border-box",
-                      gap: "11px",
-                      minHeight: "20px",
                     }}
                   >
                     {/* Check badge: 16px x 16px, background #E5F3E9, border-radius 20px */}
@@ -160,14 +153,13 @@ export const TransparentPricing: React.FC = () => {
 
                     {/* Description: Inter 400, 13.5px, line-height 145%, #153E35 */}
                     <span
+                      className="text-[13px] sm:text-[13.5px]"
                       style={{
                         fontFamily: "'Inter', sans-serif",
                         fontStyle: "normal",
                         fontWeight: 400,
-                        fontSize: "13.5px",
                         lineHeight: "145%",
                         color: "#153E35",
-                        whiteSpace: "nowrap",
                       }}
                     >
                       {benefit.text}

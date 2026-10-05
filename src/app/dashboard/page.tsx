@@ -20,6 +20,10 @@ import {
   Clock,
   XCircle,
   ExternalLink,
+  LayoutDashboard,
+  Link as LinkIcon,
+  Menu,
+  CreditCard,
 } from "lucide-react";
 
 export default function Home() {
@@ -27,6 +31,7 @@ export default function Home() {
   const [environment, setEnvironment] = useState<"sandbox" | "live">("sandbox");
   const [kybApproved, setKybApproved] = useState<boolean>(false);
   const [kybStep, setKybStep] = useState<number>(2);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState<boolean>(false);
 
   // Checkout Modal State
   const [checkoutModalOpen, setCheckoutModalOpen] = useState<boolean>(false);
@@ -51,20 +56,23 @@ export default function Home() {
         setEnvironment={setEnvironment}
         kybApproved={kybApproved}
         onOpenCheckoutModal={() => handleOpenCheckoutModal()}
+        onToggleSidebar={() => setMobileSidebarOpen(true)}
       />
 
       {/* Main Container */}
       <div className="flex-1 flex max-w-7xl w-full mx-auto">
-        {/* Left Sidebar */}
+        {/* Left Sidebar (Desktop persistent + Mobile Full-Screen Drawer from left) */}
         <Sidebar
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           kybApproved={kybApproved}
           kybStep={kybStep}
+          isOpen={mobileSidebarOpen}
+          onClose={() => setMobileSidebarOpen(false)}
         />
 
         {/* Center Content View */}
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-3.5 sm:p-6 pb-24 lg:pb-6 overflow-y-auto">
           {/* Notification Banner when in Sandbox */}
           {environment === "sandbox" && (
             <div className="mb-6 p-4 bg-[#EAE6D8]/80 border border-[#DBAE40]/40 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
@@ -154,8 +162,8 @@ export default function Home() {
 
               {/* Extended table */}
               <div className="bg-white p-5 rounded-2xl border border-[#E3E5E2] shadow-2xs">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="relative w-64">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                  <div className="relative w-full sm:w-64">
                     <Search className="w-3.5 h-3.5 text-[#78848A] absolute left-3 top-2.5" />
                     <input
                       type="text"
@@ -327,6 +335,66 @@ export default function Home() {
           )}
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation Bar (Sticky bottom for quick tab switching on small screens) */}
+      <nav
+        aria-label="Navigation mobile"
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#071D14]/95 backdrop-blur-md border-t border-[#DBAE40]/30 px-3 py-2 flex items-center justify-around shadow-2xl"
+      >
+        <button
+          onClick={() => setActiveTab("overview")}
+          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
+            activeTab === "overview"
+              ? "text-[#DBAE40] font-bold"
+              : "text-[#A0A8AE] hover:text-white"
+          }`}
+        >
+          <LayoutDashboard className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px] font-jura">Accueil</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("transactions")}
+          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
+            activeTab === "transactions"
+              ? "text-[#DBAE40] font-bold"
+              : "text-[#A0A8AE] hover:text-white"
+          }`}
+        >
+          <Receipt className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px] font-jura">Flux</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("payment-links")}
+          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
+            activeTab === "payment-links"
+              ? "text-[#DBAE40] font-bold"
+              : "text-[#A0A8AE] hover:text-white"
+          }`}
+        >
+          <LinkIcon className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px] font-jura">Liens</span>
+        </button>
+
+        <button
+          onClick={() => handleOpenCheckoutModal()}
+          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[#DBAE40] hover:text-[#f3cc68] transition-all"
+        >
+          <div className="w-7 h-7 rounded-full bg-[#DBAE40] text-[#071D14] flex items-center justify-center mb-0.5 shadow-sm font-bold">
+            <CreditCard className="w-4 h-4" />
+          </div>
+          <span className="text-[10px] font-jura font-bold">Payer</span>
+        </button>
+
+        <button
+          onClick={() => setMobileSidebarOpen(true)}
+          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[#A0A8AE] hover:text-white transition-all"
+        >
+          <Menu className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px] font-jura">Menu</span>
+        </button>
+      </nav>
 
       {/* Global Interactive Checkout Modal */}
       <CheckoutWidgetModal

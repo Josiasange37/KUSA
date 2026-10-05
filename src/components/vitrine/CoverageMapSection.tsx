@@ -134,69 +134,71 @@ export const CoverageMapSection: React.FC = () => {
       : countries.filter((c) => c.zone === selectedZone);
 
   return (
-    <section id="countries" className="py-24 bg-[#F6F4EE] relative">
+    <section id="countries" className="py-14 sm:py-24 bg-[#F6F4EE] relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14">
+        <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#0E3B33]/10 border border-[#0E3B33]/20 text-[#0E3B33] text-xs font-bold mb-3">
             <Globe2 className="w-3.5 h-3.5 text-[#D4AF37]" />
             <span>COUVERTURE PANAFRICAINE UNIQUE</span>
           </div>
 
-          <h2 className="font-heading text-3xl sm:text-4xl font-extrabold text-[#0D1B2A] tracking-tight">
+          <h2 className="font-heading text-2xl xs:text-3xl sm:text-4xl font-extrabold text-[#0D1B2A] tracking-tight">
             12 Pays, 3 Devises Régionales,{" "}
             <span className="text-[#0E3B33]">Une Seule Intégration</span>
           </h2>
 
-          <p className="mt-4 text-base text-gray-600">
+          <p className="mt-3 sm:mt-4 text-sm sm:text-base text-gray-600">
             Encaissez dans la monnaie locale de vos acheteurs. KUSA unifie les zones CEMAC (XAF), UEMOA (XOF) et RDC (CDF) avec règlement automatique sur votre compte bancaire.
           </p>
 
           <AfricanMotifDivider className="mt-6" theme="gold" />
 
           {/* Zone Filter Tabs */}
-          <div className="mt-8 inline-flex p-1.5 rounded-2xl bg-white border border-gray-200 shadow-xs">
-            <button
-              onClick={() => setSelectedZone("ALL")}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                selectedZone === "ALL"
-                  ? "bg-[#0E3B33] text-white shadow-xs"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              Tous les 12 Pays
-            </button>
-            <button
-              onClick={() => setSelectedZone("CEMAC")}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                selectedZone === "CEMAC"
-                  ? "bg-[#0E3B33] text-white shadow-xs"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              Zone CEMAC (XAF)
-            </button>
-            <button
-              onClick={() => setSelectedZone("UEMOA")}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                selectedZone === "UEMOA"
-                  ? "bg-[#0E3B33] text-white shadow-xs"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              Zone UEMOA (XOF)
-            </button>
-            <button
-              onClick={() => setSelectedZone("RDC")}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                selectedZone === "RDC"
-                  ? "bg-[#0E3B33] text-white shadow-xs"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              RDC (CDF / USD)
-            </button>
+          <div className="mt-8 flex justify-center w-full">
+            <div className="flex flex-wrap sm:inline-flex p-1.5 rounded-2xl bg-white border border-gray-200 shadow-xs gap-1 max-w-full justify-center">
+              <button
+                onClick={() => setSelectedZone("ALL")}
+                className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                  selectedZone === "ALL"
+                    ? "bg-[#0E3B33] text-white shadow-xs"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                Tous les 12 Pays
+              </button>
+              <button
+                onClick={() => setSelectedZone("CEMAC")}
+                className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                  selectedZone === "CEMAC"
+                    ? "bg-[#0E3B33] text-white shadow-xs"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                Zone CEMAC (XAF)
+              </button>
+              <button
+                onClick={() => setSelectedZone("UEMOA")}
+                className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                  selectedZone === "UEMOA"
+                    ? "bg-[#0E3B33] text-white shadow-xs"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                Zone UEMOA (XOF)
+              </button>
+              <button
+                onClick={() => setSelectedZone("RDC")}
+                className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                  selectedZone === "RDC"
+                    ? "bg-[#0E3B33] text-white shadow-xs"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                RDC (CDF / USD)
+              </button>
+            </div>
           </div>
         </div>
 
