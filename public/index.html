@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KUSA — L'Infrastructure de Paiement des Entreprises Africaines</title>
+  <meta name="description" content="L'agrégateur de paiement unifié pour l'Afrique subsaharienne (12 pays). Encaissez par Mobile Money (Orange, MTN, Wave, Moov, Airtel) et Cartes bancaires avec une API moderne et des Liens sans code.">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            kusa: {
+              forest: "#0E3B33",
+              "forest-dark": "#092520",
+              "forest-light": "#155247",
+              navy: "#0D1B2A",
+              "navy-dark": "#070E16",
+              gold: "#D4AF37",
+              "gold-light": "#E8C866",
+              "gold-hover": "#BF9B2F",
+              cream: "#F6F4EE",
+              sage: "#4E7C6B",
+              "sage-light": "#EBF4F0",
+              border: "#E5E7EB",
+            }
+          },
+          fontFamily: {
+            heading: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          boxShadow: {
+            kusa: "0 4px 20px -2px rgba(14, 59, 51, 0.08)",
+            "kusa-lg": "0 10px 30px -4px rgba(13, 27, 42, 0.12)",
+            "kusa-gold": "0 8px 25px -4px rgba(212, 175, 55, 0.28)",
+            "kusa-card": "0 20px 45px -15px rgba(14, 59, 51, 0.09)",
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #F8F9FA; color: #0D1B2A; }
+    h1, h2, h3, h4, .font-heading { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .gold-text-gradient {
+      background: linear-gradient(135deg, #ECC850 0%, #D4AF37 50%, #B88E1C 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    @keyframes pulseRing {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.6); }
+      70% { transform: scale(1); box-shadow: 0 0 0 14px rgba(212, 175, 55, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+    }
+    .ussd-pulse { animation: pulseRing 2s infinite cubic-bezier(0.45, 0, 0.55, 1); }
+  </style>
+</head>
+<body class="min-h-full flex flex-col antialiased selection:bg-[#D4AF37]/30 selection:text-[#0D1B2A]">
+
+  <!-- TOP AFRICAN MOTIF BANNER -->
+  <div class="h-1.5 w-full bg-[#0D1B2A] overflow-hidden fixed top-0 left-0 right-0 z-50">
+    <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 24" preserveAspectRatio="repeat-x">
+      <pattern id="kusa-top-pat" width="48" height="24" patternUnits="userSpaceOnUse">
+        <polygon points="0,12 12,0 24,12 12,24" fill="#D4AF37" fill-opacity="0.85" />
+        <polygon points="24,12 36,0 48,12 36,24" fill="#0E3B33" fill-opacity="0.75" />
+        <polygon points="6,12 12,6 18,12 12,18" fill="none" stroke="#0E3B33" stroke-width="0.8" stroke-opacity="0.8" />
+        <circle cx="12" cy="12" r="2" fill="#0E3B33" fill-opacity="0.85" />
+        <circle cx="36" cy="12" r="2" fill="#D4AF37" fill-opacity="0.85" />
+        <line x1="0" y1="12" x2="48" y2="12" stroke="#D4AF37" stroke-width="0.5" stroke-opacity="0.4" />
+      </pattern>
+      <rect width="100%" height="24" fill="url(#kusa-top-pat)" />
+    </svg>
+  </div>
+
+  <!-- FLOATING NAVBAR -->
+  <header class="fixed top-1.5 left-0 right-0 z-40 bg-[#0E3B33]/95 backdrop-blur-md border-b border-[#D4AF37]/20 py-3 shadow-kusa">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between">
+        
+        <!-- Brand Logo -->
+        <a href="/" class="flex items-center space-x-3 group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0D1B2A] to-[#0E3B33] border border-[#D4AF37]/60 flex items-center justify-center shadow-kusa">
+            <span class="font-heading font-extrabold text-2xl tracking-tighter text-[#D4AF37]">K</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37] ml-0.5 mt-2 animate-ping"></span>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="font-heading font-bold text-xl tracking-wider text-white">KUSA</span>
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#0D1B2A] tracking-wider uppercase">PayFac</span>
+            </div>
+            <p class="text-[10px] text-[#D4AF37] font-medium tracking-wide hidden sm:block">ENCAISSER, SIMPLEMENT.</p>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex items-center space-x-1 lg:space-x-2 bg-[#0D1B2A]/40 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/10 text-xs">
+          <a href="#features" class="px-3 py-1.5 text-white/80 hover:text-[#D4AF37] rounded-full transition-colors">Solutions</a>
+          <a href="#developer" class="px-3 py-1.5 text-white/80 hover:text-[#D4AF37] rounded-full transition-colors">Développeurs</a>
+          <a href="#countries" class="px-3 py-1.5 text-white/80 hover:text-[#D4AF37] rounded-full transition-colors">12 Pays</a>
+          <a href="#pricing" class="px-3 py-1.5 text-white/80 hover:text-[#D4AF37] rounded-full transition-colors">Tarifs</a>
+          <a href="/dashboard.html" class="px-3 py-1.5 text-[#D4AF37] hover:text-white rounded-full transition-colors font-semibold">Espace Marchand</a>
+        </nav>
+
+        <!-- Right Buttons -->
+        <div class="flex items-center space-x-3">
+          <button onclick="openCheckoutModal('Facture Afritech #CMD-8921', 25000)" class="hidden sm:flex items-center space-x-1.5 px-3 py-2 text-xs font-semibold text-white/90 hover:text-[#D4AF37] transition-colors">
+            <svg class="w-4 h-4 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+            <span>Tester la Démo</span>
+          </button>
+
+          <a href="/dashboard.html" class="hidden sm:inline-block px-3.5 py-2 text-xs font-semibold text-white bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl transition-all">
+            Connexion
+          </a>
+
+          <a href="/dashboard.html" class="px-4 py-2 rounded-xl text-xs font-bold text-[#0D1B2A] bg-gradient-to-r from-[#D4AF37] to-[#BF9B2F] hover:shadow-kusa-gold transition-all transform hover:-translate-y-0.5">
+            Créer un compte &rarr;
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN HERO SECTION -->
+  <section class="relative pt-28 pb-16 sm:pt-36 sm:pb-24 lg:pt-40 lg:pb-28 bg-[#F6F4EE] overflow-hidden">
+    <div class="absolute inset-y-0 left-0 w-full lg:w-3/5 pointer-events-none opacity-40" style="background-image: radial-gradient(#0E3B33 1px, transparent 1px); background-size: 28px 28px;"></div>
+    <div class="absolute inset-y-0 right-0 w-full lg:w-1/2 pointer-events-none opacity-60" style="background-image: url('/images/african-pattern-bg.png'); background-repeat: repeat; background-position: right top; mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.85) 40%, rgba(0,0,0,1) 100%); -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.85) 40%, rgba(0,0,0,1) 100%);"></div>
+    <div class="absolute top-1/3 right-1/4 w-[450px] h-[450px] bg-[#D4AF37]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <div class="lg:col-span-7 space-y-6 text-left">
+          <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white border border-gray-200/80 shadow-xs">
+            <span class="w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>
+            <span class="text-xs font-medium text-gray-700">Orange Money &amp; Mobile Money — Cameroun</span>
+          </div>
+
+          <h1 class="font-heading text-4xl sm:text-5xl lg:text-[56px] font-extrabold text-[#0B332B] tracking-tight leading-[1.12]">
+            L’infrastructure<br>de paiement<br>des entreprises<br>africaines
+          </h1>
+
+          <p class="text-base sm:text-lg text-gray-600 max-w-lg leading-relaxed font-normal">
+            KUSA facilite l’intégration des API de paiement officielles. Encaissez en ligne sur votre site ou votre application, ou envoyez un simple lien de paiement à vos clients.
+          </p>
+
+          <div class="pt-2 flex flex-wrap items-center gap-4">
+            <a href="/dashboard.html" class="px-7 py-3.5 rounded-full font-heading font-semibold text-sm text-white bg-[#0B332B] hover:bg-[#0E3B33] shadow-sm hover:shadow-md transition-all">
+              Demander un accès
+            </a>
+            <a href="#developer" class="px-7 py-3.5 rounded-full font-heading font-semibold text-sm text-[#0B332B] bg-white hover:bg-gray-50 border border-gray-200/90 shadow-xs hover:border-gray-300 transition-all">
+              Voir la documentation
+            </a>
+          </div>
+
+          <div class="pt-3 text-xs font-mono text-gray-400 tracking-wider">
+            XAF · REST API · Webhooks · Sandbox
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 relative flex justify-center lg:justify-end">
+          <div class="relative inline-block">
+            <div class="relative rounded-[28px] sm:rounded-[36px] overflow-hidden shadow-2xl border border-white/80 bg-white">
+              <img src="/images/hero-woman.png" alt="Entrepreneure africaine avec KUSA" class="w-[300px] sm:w-[350px] md:w-[380px] lg:w-[410px] h-auto object-cover block">
+            </div>
+
+            <div onclick="openCheckoutModal('Facture Afritech #CMD-8921', 15000)" class="absolute -bottom-4 -left-4 sm:-bottom-5 sm:-left-7 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-100/90 px-4 py-3 flex items-center space-x-3.5 z-20 cursor-pointer transition-transform hover:scale-105">
+              <div class="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                <svg class="w-4 h-4 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+              </div>
+              <div class="leading-tight text-left">
+                <div class="font-heading font-bold text-xs text-gray-900">Paiement confirmé</div>
+                <div class="text-[11px] font-mono text-gray-500 mt-0.5">15 000 XAF · Orange Money</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS RIBBON -->
+  <div class="relative bg-[#F6F4EE] border-y border-[#EDECE6] overflow-hidden py-8 sm:py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="p-4 rounded-2xl bg-white/70 border border-[#E5E7EB] shadow-xs">
+          <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Couverture Panafricaine</span>
+          <div class="font-heading text-3xl font-extrabold text-[#0D1B2A]">12 <span class="text-xs font-bold text-[#D4AF37]">Pays</span></div>
+          <p class="text-xs text-gray-500 mt-1">CEMAC, UEMOA & RDC interconnectés</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-white/70 border border-[#E5E7EB] shadow-xs">
+          <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Temps d'Intégration</span>
+          <div class="font-heading text-3xl font-extrabold text-[#0D1B2A]">&lt; 15 <span class="text-xs font-bold text-[#D4AF37]">min</span></div>
+          <p class="text-xs text-gray-500 mt-1">Sandbox instantané sans paperasse</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-white/70 border border-[#E5E7EB] shadow-xs">
+          <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Multi-Devises Natives</span>
+          <div class="font-heading text-2xl font-extrabold text-[#0D1B2A]">XAF · XOF</div>
+          <p class="text-xs text-gray-500 mt-1">Règlements locaux en CDF et EUR</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-white/70 border border-[#E5E7EB] shadow-xs">
+          <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Disponibilité Réseau</span>
+          <div class="font-heading text-3xl font-extrabold text-[#0D1B2A]">99.9%</div>
+          <p class="text-xs text-gray-500 mt-1">Routage dynamique anti-coupures telcos</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BENTO FEATURES SECTION -->
+  <section id="features" class="py-24 bg-[#F8F9FA]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#0E3B33]/10 border border-[#0E3B33]/20 text-[#0E3B33] text-xs font-bold mb-3">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+          <span>SOLUTIONS D'ENCAISSEMENT PANAFRICAINES</span>
+        </div>
+        <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-[#0D1B2A] tracking-tight">
+          Deux façons d'encaisser, <span class="text-[#0E3B33]">une seule infrastructure</span>
+        </h2>
+        <p class="mt-4 text-base text-gray-600">
+          Que vous soyez une scale-up tech connectant 12 pays par API ou un commerçant vendant sur WhatsApp sans code, KUSA sécurise chaque franc.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Bento 1: API REST (7 cols) -->
+        <div class="lg:col-span-7 bg-white rounded-3xl p-8 border border-[#E5E7EB] shadow-sm hover:shadow-kusa-card transition-all">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-[#0E3B33] text-[#D4AF37] flex items-center justify-center">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#0E3B33]/5 text-[#0E3B33]">
+              API Développeurs
+            </span>
+          </div>
+
+          <h3 class="font-heading text-2xl font-bold text-[#0D1B2A]">API REST Unifiée & SDKs</h3>
+          <p class="mt-2 text-sm text-gray-600">
+            Connectez tous les opérateurs Mobile Money (Orange, MTN, Wave, Moov, Airtel) et les réseaux bancaires Visa/Mastercard via un seul endpoint avec webhooks signés HMAC-SHA256.
+          </p>
+
+          <div class="mt-6 rounded-2xl bg-[#0D1B2A] p-4 font-mono text-xs text-gray-300">
+            <span class="text-amber-400">// Push USSD en 3 lignes avec le SDK KUSA</span><br>
+            <span class="text-purple-400">const</span> payment = <span class="text-blue-400">await</span> kusa.payments.create({<br>
+            &nbsp;&nbsp;amount: <span class="text-amber-300">15000</span>, currency: <span class="text-emerald-300">'XAF'</span>,<br>
+            &nbsp;&nbsp;channel: <span class="text-emerald-300">'ORANGE_MONEY'</span>, country: <span class="text-emerald-300">'CM'</span>,<br>
+            &nbsp;&nbsp;customer: { phone: <span class="text-emerald-300">'+237699001122'</span> }<br>
+            });
+          </div>
+        </div>
+
+        <!-- Bento 2: Liens de Paiement (5 cols) -->
+        <div class="lg:col-span-5 bg-gradient-to-b from-[#0E3B33] to-[#0D1B2A] text-white rounded-3xl p-8 border border-[#D4AF37]/30 shadow-sm hover:shadow-kusa-card transition-all">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-white/10 text-[#D4AF37] border border-[#D4AF37]/40 flex items-center justify-center">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#D4AF37]/20 text-[#D4AF37]">
+              Zéro Code Requis
+            </span>
+          </div>
+
+          <h3 class="font-heading text-2xl font-bold text-white">Liens de Paiement No-Code</h3>
+          <p class="mt-2 text-sm text-white/80">
+            Créez une page de vente en 30 secondes pour vos cours, prestations ou factures. Partagez sur WhatsApp ou téléchargez le QR code imprimable.
+          </p>
+
+          <div class="my-6 p-4 rounded-2xl bg-white/10 border border-white/15">
+            <span class="text-xs text-white/60 block">Lien généré :</span>
+            <div class="p-2.5 rounded-xl bg-[#08131F] font-mono text-xs text-[#D4AF37] mt-1 truncate">
+              pay.kusa.cm/l/formation-2026
+            </div>
+          </div>
+
+          <a href="/dashboard.html" class="inline-flex items-center space-x-2 text-xs font-bold text-[#D4AF37] hover:text-white">
+            <span>Créer un lien de paiement &rarr;</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- DEVELOPER SECTION -->
+  <section id="developer" class="py-24 bg-[#0D1B2A] text-white relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <div class="lg:col-span-5 space-y-6">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-bold">
+            <span>CONÇU POUR LES DÉVELOPPEURS</span>
+          </div>
+          <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            Une API pensée pour être intégrée <span class="text-[#D4AF37]">en une après-midi</span>
+          </h2>
+          <p class="text-sm sm:text-base text-white/80 leading-relaxed">
+            Ouvrez les portes de 12 pays africains en quelques requêtes HTTP RESTful. Clés Sandbox immédiates, idempotence 24h et webhooks HMAC-SHA256.
+          </p>
+
+          <div class="pt-2 flex items-center space-x-4">
+            <a href="/dashboard.html" class="px-5 py-2.5 rounded-xl font-heading font-bold text-xs text-[#0D1B2A] bg-gradient-to-r from-[#D4AF37] to-[#BF9B2F]">
+              Obtenir mes clés API &rarr;
+            </a>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7">
+          <div class="rounded-3xl bg-[#08131F] border border-[#D4AF37]/30 shadow-2xl overflow-hidden p-6 font-mono text-xs">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-white/10 text-gray-400">
+              <span class="text-[#D4AF37] font-bold">POST /v1/payments</span>
+              <span class="text-emerald-400">HTTP 201 Created (142ms)</span>
+            </div>
+            <pre class="text-gray-300 leading-relaxed overflow-x-auto">
+{
+  "id": "pay_98f1a23c",
+  "amount": 25000,
+  "currency": "XAF",
+  "channel": "ORANGE_MONEY",
+  "country": "CM",
+  "status": "PENDING_CUSTOMER_ACTION",
+  "telco_reference": "OM_CM_982189",
+  "ussd_prompt_dispatched": true
+}
+            </pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 12-COUNTRY GRID -->
+  <section id="countries" class="py-24 bg-[#F6F4EE]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#0E3B33]/10 border border-[#0E3B33]/20 text-[#0E3B33] text-xs font-bold mb-3">
+        <span>COUVERTURE PANAFRICAINE UNIQUE</span>
+      </div>
+      <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-[#0D1B2A]">
+        12 Pays, 3 Devises Régionales, <span class="text-[#0E3B33]">Une Seule Intégration</span>
+      </h2>
+      <p class="mt-4 text-base text-gray-600 max-w-2xl mx-auto">
+        Encaissez en XAF (CEMAC), XOF (UEMOA) et CDF (RDC) avec virement automatique sur votre compte bancaire d'entreprise.
+      </p>
+
+      <div class="mt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-left">
+        <div class="p-4 bg-white rounded-2xl border border-gray-200">
+          <span class="text-2xl">🇨🇲</span>
+          <h4 class="font-bold text-sm text-[#0D1B2A] mt-2">Cameroun</h4>
+          <span class="text-[10px] text-gray-500 font-mono">XAF · Orange, MTN</span>
+        </div>
+        <div class="p-4 bg-white rounded-2xl border border-gray-200">
+          <span class="text-2xl">🇨🇮</span>
+          <h4 class="font-bold text-sm text-[#0D1B2A] mt-2">Côte d'Ivoire</h4>
+          <span class="text-[10px] text-gray-500 font-mono">XOF · Wave, Orange, MTN</span>
+        </div>
+        <div class="p-4 bg-white rounded-2xl border border-gray-200">
+          <span class="text-2xl">🇸🇳</span>
+          <h4 class="font-bold text-sm text-[#0D1B2A] mt-2">Sénégal</h4>
+          <span class="text-[10px] text-gray-500 font-mono">XOF · Wave, Orange</span>
+        </div>
+        <div class="p-4 bg-white rounded-2xl border border-gray-200">
+          <span class="text-2xl">🇬🇦</span>
+          <h4 class="font-bold text-sm text-[#0D1B2A] mt-2">Gabon</h4>
+          <span class="text-[10px] text-gray-500 font-mono">XAF · Airtel, Moov</span>
+        </div>
+        <div class="p-4 bg-white rounded-2xl border border-gray-200">
+          <span class="text-2xl">🇨🇬</span>
+          <h4 class="font-bold text-sm text-[#0D1B2A] mt-2">Congo</h4>
+          <span class="text-[10px] text-gray-500 font-mono">XAF · MTN, Airtel</span>
+        </div>
+        <div class="p-4 bg-white rounded-2xl border border-gray-200">
+          <span class="text-2xl">🇨🇩</span>
+          <h4 class="font-bold text-sm text-[#0D1B2A] mt-2">RDC Kinshasa</h4>
+          <span class="text-[10px] text-gray-500 font-mono">CDF/USD · M-Pesa, Orange</span>
+        </div>
+      </div>
+      <p class="text-xs text-gray-500 mt-4">+ Bénin 🇧🇯, Togo 🇹🇬, Burkina Faso 🇧🇫, Tchad 🇹🇩, RCA 🇨🇫, Guinée Équatoriale 🇬🇶</p>
+    </div>
+  </section>
+
+  <!-- TRANSPARENT PRICING -->
+  <section id="pricing" class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#0E3B33]/10 text-[#0E3B33] text-xs font-bold mb-3">
+          <span>TARIFICATION SIMPLE</span>
+        </div>
+        <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-[#0D1B2A]">
+          Une tarification simple, <span class="text-[#0E3B33]">sans frais cachés</span>
+        </h2>
+        <p class="mt-4 text-base text-gray-600">
+          3% par transaction réussie. Zéro frais d'inscription, zéro abonnement mensuel.
+        </p>
+      </div>
+
+      <!-- Pricing Card + Calculator -->
+      <div class="max-w-4xl mx-auto bg-[#F6F4EE] rounded-3xl p-8 sm:p-10 border border-[#EDECE6] grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div>
+          <div class="font-heading text-5xl font-extrabold text-[#0D1B2A]">3%</div>
+          <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block mt-1">Par encaissement réussi</span>
+          <ul class="mt-6 space-y-3 text-xs sm:text-sm text-gray-700">
+            <li class="flex items-center space-x-2">
+              <span class="text-emerald-600 font-bold">✓</span>
+              <span><strong>0 XAF</strong> d'ouverture de compte</span>
+            </li>
+            <li class="flex items-center space-x-2">
+              <span class="text-emerald-600 font-bold">✓</span>
+              <span><strong>0 XAF</strong> d'abonnement mensuel</span>
+            </li>
+            <li class="flex items-center space-x-2">
+              <span class="text-emerald-600 font-bold">✓</span>
+              <span>Reversement automatique J+1 sur compte bancaire</span>
+            </li>
+          </ul>
+          <div class="mt-8">
+            <a href="/dashboard.html" class="px-6 py-3 rounded-xl font-bold text-xs text-[#0D1B2A] bg-gradient-to-r from-[#D4AF37] to-[#BF9B2F] shadow-kusa-gold inline-block">
+              Ouvrir un compte &rarr;
+            </a>
+          </div>
+        </div>
+
+        <div class="bg-[#0E3B33] text-white p-6 rounded-2xl border border-[#D4AF37]/30 space-y-4">
+          <h4 class="font-bold text-sm text-[#D4AF37]">Simulateur de Gain</h4>
+          <div>
+            <label class="text-xs text-white/70 block">Montant encaissé : <strong id="calc-val" class="text-white">50 000 XAF</strong></label>
+            <input type="range" min="5000" max="250000" step="5000" value="50000" id="calc-slider" oninput="updateCalc(this.value)" class="w-full mt-2 accent-[#D4AF37]">
+          </div>
+          <div class="p-3 rounded-xl bg-white/10 text-xs flex justify-between">
+            <span>Frais KUSA (3%) :</span>
+            <span id="calc-fee" class="text-amber-300 font-bold">- 1 500 XAF</span>
+          </div>
+          <div class="p-3 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37]/40 text-xs flex justify-between">
+            <span class="font-bold">Net Reversé (J+1) :</span>
+            <span id="calc-net" class="text-white font-extrabold text-sm">48 500 XAF</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA SECTION -->
+  <section class="py-20 bg-[#F8F9FA]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="rounded-3xl bg-gradient-to-br from-[#0E3B33] via-[#0B2520] to-[#0D1B2A] text-white p-8 sm:p-14 border border-[#D4AF37]/40 shadow-2xl text-center space-y-6">
+        <h2 class="font-heading text-3xl sm:text-5xl font-extrabold text-white">
+          Prêt à accepter les paiements <span class="gold-text-gradient">mobiles</span> ?
+        </h2>
+        <p class="text-base text-white/80 max-w-xl mx-auto">
+          Faites comme les entreprises africaines qui font confiance à KUSA pour simplifier leurs flux financiers.
+        </p>
+        <div class="pt-2 flex justify-center gap-4">
+          <a href="/dashboard.html" class="px-8 py-3.5 rounded-xl font-heading font-bold text-sm text-[#0D1B2A] bg-gradient-to-r from-[#D4AF37] to-[#BF9B2F] shadow-kusa-gold">
+            Créer mon compte marchand &rarr;
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-[#08131F] text-white pt-16 pb-12 border-t border-[#D4AF37]/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-12 border-b border-white/10 text-xs text-white/70">
+        <div class="space-y-3">
+          <div class="flex items-center space-x-2">
+            <span class="font-heading font-bold text-xl text-white">KUSA</span>
+            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#0D1B2A]">PayFac</span>
+          </div>
+          <p class="text-white/60">Agrégateur de paiement certifié. Conçu à Douala, Cameroun.</p>
+        </div>
+        <div>
+          <h4 class="font-bold text-[#D4AF37] uppercase mb-2">Solutions</h4>
+          <ul class="space-y-1">
+            <li>API REST & SDKs</li>
+            <li>Liens de Paiement No-Code</li>
+            <li>Grand Livre à Double Entrée</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-[#D4AF37] uppercase mb-2">Développeurs</h4>
+          <ul class="space-y-1">
+            <li><a href="/dashboard.html" class="hover:text-white">Clés d'API & Sandbox</a></li>
+            <li>Webhooks Signés HMAC</li>
+            <li>Statut Réseau : 99.9%</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-[#D4AF37] uppercase mb-2">Conformité</h4>
+          <p class="text-white/60">Normes OHADA · CEMAC · UEMOA · Chiffrement AES-256-GCM</p>
+        </div>
+      </div>
+      <div class="pt-6 flex justify-between text-xs text-white/50">
+        <span>© 2026 KUSA Technologies Inc. Tous droits réservés.</span>
+        <span>Douala · Abidjan · Dakar · Kinshasa</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CHECKOUT SIMULATOR MODAL (CLIENT-FACING) -->
+  <div id="checkout-modal" class="fixed inset-0 z-50 bg-[#0D1B2A]/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-gray-200 overflow-hidden text-[#0D1B2A]">
+      <div class="p-4 bg-[#0E3B33] text-white flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <span class="w-6 h-6 rounded-lg bg-[#D4AF37] text-[#0D1B2A] font-bold flex items-center justify-center text-xs">K</span>
+          <span class="font-bold text-xs" id="modal-title">Commande #CMD-8921</span>
+        </div>
+        <button onclick="closeCheckoutModal()" class="text-white/70 hover:text-white">&times;</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="text-center">
+          <span class="text-xs text-gray-500">Montant à régler</span>
+          <div class="font-heading text-3xl font-extrabold text-[#0E3B33]" id="modal-amount">25 000 XAF</div>
+        </div>
+        <div id="modal-screen-input">
+          <label class="text-xs font-semibold text-gray-700 block mb-1">Moyen de paiement :</label>
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <button class="p-2.5 rounded-xl border border-amber-400 bg-amber-50 text-xs font-bold text-left">🇨🇲 Orange Money</button>
+            <button class="p-2.5 rounded-xl border border-gray-200 text-xs font-bold text-left text-gray-600">🇨🇲 MTN MoMo</button>
+          </div>
+          <label class="text-xs font-semibold text-gray-700 block mb-1">Numéro de téléphone :</label>
+          <input type="text" value="+237 6 99 00 11 22" class="w-full p-2.5 border border-gray-200 rounded-xl text-xs font-mono mb-4">
+          <button onclick="triggerSimulatedUssd()" class="w-full py-3 rounded-xl bg-[#0E3B33] text-[#D4AF37] font-bold text-xs shadow-md">
+            Payer par Orange Money &rarr;
+          </button>
+        </div>
+        <div id="modal-screen-ussd" class="hidden text-center py-6 space-y-3">
+          <div class="w-12 h-12 mx-auto rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-sm ussd-pulse">
+            USSD
+          </div>
+          <h4 class="font-bold text-sm">Notification USSD Envoyée</h4>
+          <p class="text-xs text-gray-500">Veuillez taper votre code secret sur votre téléphone dans les 60 secondes.</p>
+          <button onclick="triggerSimulatedSuccess()" class="mt-4 px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs">
+            Simuler la saisie du code PIN
+          </button>
+        </div>
+        <div id="modal-screen-success" class="hidden text-center py-6 space-y-3">
+          <div class="w-12 h-12 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-lg">
+            ✓
+          </div>
+          <h4 class="font-bold text-sm text-emerald-800">Paiement Validé avec Succès !</h4>
+          <p class="text-xs text-gray-500">Le reçu a été transmis par SMS. Réf : tx_98f1a23c</p>
+          <button onclick="closeCheckoutModal()" class="mt-3 px-4 py-2 rounded-xl bg-[#0E3B33] text-[#D4AF37] font-bold text-xs">
+            Fermer la démo
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function updateCalc(val) {
+      const num = Number(val);
+      const fee = Math.round(num * 0.03);
+      const net = num - fee;
+      document.getElementById('calc-val').innerText = num.toLocaleString('fr-FR') + ' XAF';
+      document.getElementById('calc-fee').innerText = '- ' + fee.toLocaleString('fr-FR') + ' XAF';
+      document.getElementById('calc-net').innerText = net.toLocaleString('fr-FR') + ' XAF';
+    }
+
+    function openCheckoutModal(title, amount) {
+      document.getElementById('modal-title').innerText = title || 'Commande #CMD-8921';
+      document.getElementById('modal-amount').innerText = (amount || 25000).toLocaleString('fr-FR') + ' XAF';
+      document.getElementById('modal-screen-input').classList.remove('hidden');
+      document.getElementById('modal-screen-ussd').classList.add('hidden');
+      document.getElementById('modal-screen-success').classList.add('hidden');
+      const modal = document.getElementById('checkout-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeCheckoutModal() {
+      const modal = document.getElementById('checkout-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function triggerSimulatedUssd() {
+      document.getElementById('modal-screen-input').classList.add('hidden');
+      document.getElementById('modal-screen-ussd').classList.remove('hidden');
+    }
+
+    function triggerSimulatedSuccess() {
+      document.getElementById('modal-screen-ussd').classList.add('hidden');
+      document.getElementById('modal-screen-success').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>

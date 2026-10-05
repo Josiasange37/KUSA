@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Jura:wght@400;600;700&family=Junge&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --kusa-forest: #0E3B33;
+  --kusa-navy: #0D1B2A;
+  --kusa-gold: #D4AF37;
+  --kusa-cream: #F6F4EE;
+  --kusa-sage: #4E7C6B;
+  --font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* Lenis smooth scroll configuration */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  background-color: #F8F9FA;
+  color: #0D1B2A;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, .font-heading {
+  font-family: var(--font-heading);
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F1F1;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Glassmorphism */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(229, 231, 235, 0.75);
+}
+
+.glass-panel-dark {
+  background: rgba(13, 27, 42, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.18);
+}
+
+.glass-nav {
+  background: rgba(14, 59, 51, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Gold shimmer animation */
+@keyframes goldShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.gold-shimmer {
+  background: linear-gradient(90deg, #D4AF37 0%, #FFF3BF 50%, #D4AF37 100%);
+  background-size: 200% 100%;
+  animation: goldShimmer 3s infinite linear;
+}
+
+.gold-text-gradient {
+  background: linear-gradient(135deg, #ECC850 0%, #D4AF37 50%, #B88E1C 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Subtle dot grid pattern */
+.dot-pattern {
+  background-image: radial-gradient(rgba(212, 175, 55, 0.15) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.dot-pattern-forest {
+  background-image: radial-gradient(rgba(14, 59, 51, 0.08) 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+
+/* Pulse ring animation for USSD waiting */
+@keyframes pulseRing {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.6); }
+  70% { transform: scale(1); box-shadow: 0 0 0 14px rgba(212, 175, 55, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+}
+
+.ussd-pulse {
+  animation: pulseRing 2s infinite cubic-bezier(0.45, 0, 0.55, 1);
+}

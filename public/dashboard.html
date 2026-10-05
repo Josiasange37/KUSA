@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KUSA — L'API de paiement pour l'Afrique | Plateforme & Dashboard</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            kusa: {
+              forest: "#0E3B33",
+              navy: "#0D1B2A",
+              gold: "#D4AF37",
+              "gold-hover": "#BF9B2F",
+              cream: "#F6F4EE",
+              sage: "#4E7C6B",
+              "sage-light": "#EBF4F0",
+              border: "#E5E7EB",
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #F8F9FA; }
+    @keyframes pulseRing {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.6); }
+      70% { transform: scale(1); box-shadow: 0 0 0 14px rgba(212, 175, 55, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+    }
+    .ussd-pulse { animation: pulseRing 2s infinite cubic-bezier(0.45, 0, 0.55, 1); }
+  </style>
+</head>
+<body class="h-full flex flex-col text-[#0D1B2A] antialiased">
+
+  <!-- AFRICAN MOTIF BANNER -->
+  <div class="h-1.5 w-full bg-[#0D1B2A] overflow-hidden">
+    <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 24" preserveAspectRatio="repeat-x">
+      <pattern id="kusa-pat" width="60" height="24" patternUnits="userSpaceOnUse">
+        <polygon points="0,12 15,0 30,12 15,24" fill="#D4AF37" fill-opacity="0.85" />
+        <polygon points="30,12 45,0 60,12 45,24" fill="#0E3B33" fill-opacity="0.6" />
+        <circle cx="15" cy="12" r="3.5" fill="#D4AF37" />
+        <circle cx="45" cy="12" r="3.5" fill="#0E3B33" />
+      </pattern>
+      <rect width="100%" height="24" fill="url(#kusa-pat)" />
+    </svg>
+  </div>
+
+  <!-- TOP NAVBAR -->
+  <header class="sticky top-0 z-40 bg-[#0E3B33] text-white border-b border-[#0D1B2A]/40 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo & Brand -->
+        <div class="flex items-center space-x-6">
+          <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('overview')">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0D1B2A] to-[#0E3B33] border border-[#D4AF37]/50 flex items-center justify-center shadow-lg">
+              <span class="font-extrabold text-2xl tracking-tighter text-[#D4AF37]">K</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37] ml-0.5 mt-2 animate-ping"></span>
+            </div>
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <span class="font-bold text-xl tracking-wider text-white">KUSA</span>
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#D4AF37] text-[#0D1B2A] tracking-wider uppercase">PayFac</span>
+              </div>
+              <p class="text-[11px] text-[#D4AF37] font-medium tracking-wide hidden sm:block">ENCAISSER, SIMPLEMENT.</p>
+            </div>
+          </div>
+
+          <!-- Merchant Org -->
+          <div className="hidden md:flex" class="hidden md:flex items-center space-x-2 pl-4 border-l border-white/10 text-xs text-white/80">
+            <span class="w-2 h-2 rounded-full bg-[#4E7C6B]"></span>
+            <span class="font-semibold text-white">Afritech SARL</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white/70">Douala, CM</span>
+          </div>
+        </div>
+
+        <!-- Center: Environment Switcher -->
+        <div class="flex items-center bg-[#0D1B2A]/70 p-1 rounded-full border border-[#D4AF37]/30 shadow-inner">
+          <button id="btn-env-sandbox" onclick="setEnvironment('sandbox')" class="flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all bg-[#D4AF37] text-[#0D1B2A] shadow-md">
+            <span class="w-2 h-2 rounded-full bg-[#0D1B2A]"></span>
+            <span>Sandbox (Test)</span>
+          </button>
+          <button id="btn-env-live" onclick="setEnvironment('live')" class="flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all text-white/70 hover:text-white">
+            <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+            <span>Production (Live)</span>
+            <span id="badge-kyb-required" class="text-[9px] px-1 py-0.2 bg-white/10 rounded text-amber-300">KYB Requis</span>
+          </button>
+        </div>
+
+        <!-- Right: Actions & Checkout Demo -->
+        <div class="flex items-center space-x-3">
+          <button onclick="openCheckoutModal('Facture Afritech #CMD-8921', 15000)" class="flex items-center space-x-2 bg-gradient-to-r from-[#D4AF37] to-[#BF9B2F] hover:from-[#BF9B2F] hover:to-[#A88523] text-[#0D1B2A] font-bold text-xs px-3.5 py-2 rounded-lg shadow-md transition-transform hover:scale-105 active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+            <span>Tester le Checkout</span>
+          </button>
+          <div class="w-8 h-8 rounded-full bg-[#4E7C6B] flex items-center justify-center text-xs font-bold text-white border border-[#D4AF37]/50 shadow-sm cursor-pointer">
+            KW
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <div class="flex-1 flex max-w-7xl w-full mx-auto">
+
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 min-h-[calc(100vh-4.25rem)]">
+      <div class="p-4 space-y-6">
+        <!-- Merchant Card -->
+        <div class="p-3 bg-[#F6F4EE] rounded-xl border border-[#EDECE6] flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-lg bg-[#0E3B33] text-[#D4AF37] flex items-center justify-center font-bold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          </div>
+          <div class="overflow-hidden">
+            <h4 class="text-xs font-bold text-[#0D1B2A] truncate">Afritech Solutions</h4>
+            <div class="flex items-center space-x-1.5 mt-0.5">
+              <span id="sidebar-kyb-dot" class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+              <span id="sidebar-kyb-text" class="text-[10px] text-gray-500 font-medium">Sandbox Actif</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="space-y-1">
+          <p class="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Plateforme KUSA</p>
+
+          <button onclick="switchTab('overview')" id="nav-overview" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold bg-[#0E3B33] text-white shadow-sm">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+              <span>Vue d'Ensemble</span>
+            </div>
+            <span class="text-[10px] px-1.5 py-0.5 rounded font-medium bg-white/10 text-white">12 Pays</span>
+          </button>
+
+          <button onclick="switchTab('transactions')" id="nav-transactions" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium text-gray-700 hover:bg-[#F6F4EE] hover:text-[#0E3B33]">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
+              <span>Transactions</span>
+            </div>
+          </button>
+
+          <button onclick="switchTab('payment-links')" id="nav-payment-links" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium text-gray-700 hover:bg-[#F6F4EE] hover:text-[#0E3B33]">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+              <span>Liens de Paiement</span>
+            </div>
+            <span class="text-[10px] px-1.5 py-0.5 rounded font-medium bg-gray-100 text-gray-600">No-Code</span>
+          </button>
+
+          <button onclick="switchTab('payouts')" id="nav-payouts" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium text-gray-700 hover:bg-[#F6F4EE] hover:text-[#0E3B33]">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+              <span>Soldes & Payouts</span>
+            </div>
+            <span class="text-[10px] px-1.5 py-0.5 rounded font-medium bg-gray-100 text-gray-600">Ledger</span>
+          </button>
+
+          <button onclick="switchTab('developer')" id="nav-developer" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium text-gray-700 hover:bg-[#F6F4EE] hover:text-[#0E3B33]">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              <span>Espace Développeurs</span>
+            </div>
+            <span class="text-[10px] px-1.5 py-0.5 rounded font-medium bg-gray-100 text-gray-600">API & Keys</span>
+          </button>
+
+          <button onclick="switchTab('kyb')" id="nav-kyb" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium text-gray-700 hover:bg-[#F6F4EE] hover:text-[#0E3B33]">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+              <span>Conformité & KYB</span>
+            </div>
+            <span id="badge-nav-kyb" class="text-[10px] px-1.5 py-0.5 rounded font-medium bg-amber-100 text-amber-800">Étape 2/4</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Footer Info -->
+      <div class="p-4 border-t border-gray-200 bg-gray-50 text-[11px] text-gray-500">
+        <div class="flex items-center justify-between mb-1">
+          <span class="font-semibold text-gray-700">KUSA v1.0</span>
+          <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#4E7C6B]/15 text-[#0E3B33]">99.9% Dispo</span>
+        </div>
+        <p class="text-[10px] text-gray-400">Agrégateur de paiement certifié. Conçu à Douala, Cameroun.</p>
+      </div>
+    </aside>
+
+    <!-- MAIN DYNAMIC CONTENT -->
+    <main class="flex-1 p-6 overflow-y-auto">
+
+      <!-- SANDBOX NOTICE BANNER -->
+      <div id="banner-sandbox-notice" class="mb-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+        <div class="flex items-center space-x-3">
+          <span class="p-2 bg-amber-100 text-amber-800 rounded-xl shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          </span>
+          <div>
+            <h4 class="text-xs font-bold text-amber-900">Environnement de Test (Sandbox)</h4>
+            <p class="text-[11px] text-amber-700">Paiements simulés sans argent réel. Complétez la validation KYB pour débloquer la Production dans les 12 pays.</p>
+          </div>
+        </div>
+        <button onclick="switchTab('kyb')" class="px-3.5 py-1.5 bg-[#0E3B33] text-[#D4AF37] hover:bg-[#0D1B2A] text-xs font-bold rounded-xl transition-all shrink-0">
+          Vérifier mon Entreprise →
+        </button>
+      </div>
+
+      <!-- TAB 1: OVERVIEW -->
+      <section id="tab-overview" class="space-y-6">
+        <!-- Top Banner -->
+        <div class="bg-gradient-to-r from-[#0E3B33] via-[#0D1B2A] to-[#0E3B33] text-white p-6 rounded-2xl shadow-md border border-[#D4AF37]/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center space-x-2 px-2.5 py-1 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-semibold mb-2">
+              <span>🌍 12 Pays Africains Connectés</span>
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight">Tableau de bord d'encaissement KUSA</h1>
+            <p class="text-white/70 text-xs mt-1">Encaissez par Mobile Money (Orange, MTN, Wave, Moov, Airtel) et Cartes Visa/Mastercard avec Grand Livre à double entrée.</p>
+          </div>
+          <button onclick="openCheckoutModal('Commande Test #CMD-8921', 15000)" class="px-4 py-2 bg-[#D4AF37] hover:bg-[#BF9B2F] text-[#0D1B2A] font-bold text-xs rounded-xl shadow-md transition-all flex items-center space-x-2 shrink-0">
+            <span>Simuler un Paiement Client</span>
+          </button>
+        </div>
+
+        <!-- 12-Country Selector -->
+        <div class="bg-white p-2.5 rounded-xl border border-gray-200 shadow-sm flex items-center space-x-1.5 overflow-x-auto">
+          <button class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0E3B33] text-white shrink-0">🌍 Tous les 12 Pays</button>
+          <button class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-50 text-gray-700 hover:bg-gray-100 shrink-0">🇨🇲 Cameroun (XAF)</button>
+          <button class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-50 text-gray-700 hover:bg-gray-100 shrink-0">🇨🇮 Côte d'Ivoire (XOF)</button>
+          <button class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-50 text-gray-700 hover:bg-gray-100 shrink-0">🇸🇳 Sénégal (XOF)</button>
+          <button class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-50 text-gray-700 hover:bg-gray-100 shrink-0">🇬🇦 Gabon (XAF)</button>
+          <button class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-50 text-gray-700 hover:bg-gray-100 shrink-0">🇨🇬 Congo (XAF)</button>
+          <button class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-50 text-gray-700 hover:bg-gray-100 shrink-0">🇨🇩 RDC (CDF)</button>
+          <button class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-50 text-gray-700 hover:bg-gray-100 shrink-0">🇧🇯 Bénin (XOF)</button>
+          <button class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-50 text-gray-700 hover:bg-gray-100 shrink-0">🇹🇬 Togo (XOF)</button>
+          <button class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-50 text-gray-700 hover:bg-gray-100 shrink-0">🇧🇫 Burkina (XOF)</button>
+          <button class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-50 text-gray-700 hover:bg-gray-100 shrink-0">🇹🇩 Tchad (XAF)</button>
+          <button class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-50 text-gray-700 hover:bg-gray-100 shrink-0">🇨🇫 RCA (XAF)</button>
+          <button class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-50 text-gray-700 hover:bg-gray-100 shrink-0">🇬🇶 Guinée Éq. (XAF)</button>
+        </div>
+
+        <!-- KPI Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+            <div class="text-xs font-semibold text-gray-500 uppercase">Volume Encaissé (GMV)</div>
+            <div class="text-2xl font-extrabold text-[#0D1B2A] font-mono mt-1">48 750 000 <span class="text-xs font-sans text-gray-500">XAF</span></div>
+            <div class="text-[11px] text-emerald-600 font-semibold mt-2">↑ +14.2% ce mois · 1 842 transactions</div>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+            <div class="text-xs font-semibold text-gray-500 uppercase">Taux de Succès Global</div>
+            <div class="text-2xl font-extrabold text-[#0D1B2A] font-mono mt-1">96.8%</div>
+            <div class="text-[11px] text-gray-500 mt-2">Latence USSD moyenne : 18s</div>
+          </div>
+
+          <div class="bg-gradient-to-br from-[#F6F4EE] to-white p-5 rounded-2xl border border-[#D4AF37]/50 shadow-sm">
+            <div class="text-xs font-bold text-[#0E3B33] uppercase">Solde Disponible Retirable</div>
+            <div id="card-available-balance" class="text-2xl font-extrabold text-[#0E3B33] font-mono mt-1">12 400 000 <span class="text-xs font-sans text-gray-500">XAF</span></div>
+            <div class="flex justify-between items-center mt-2 pt-2 border-t border-[#EDECE6]">
+              <span class="text-[10px] text-gray-500">Compte certifié</span>
+              <button onclick="switchTab('payouts')" class="text-[11px] font-bold text-[#0E3B33] hover:text-[#D4AF37]">Demander Payout →</button>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+            <div class="text-xs font-semibold text-gray-500 uppercase">Clearing & Réserve</div>
+            <div class="text-xs mt-1 text-gray-600">En cours (J+1) : <strong class="font-mono text-gray-900">3 150 000 XAF</strong></div>
+            <div class="text-xs mt-1 text-gray-600">Réserve litiges (5%) : <strong class="font-mono text-gray-900">800 000 XAF</strong></div>
+            <div class="text-[10px] text-gray-400 mt-2">Grand Livre à double entrée</div>
+          </div>
+        </div>
+
+        <!-- Live Transactions Table -->
+        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-bold text-[#0D1B2A]">Transactions d'Encaissement en Direct</h3>
+            <button onclick="switchTab('transactions')" class="text-xs text-[#0E3B33] hover:text-[#D4AF37] font-bold">Voir toutes les transactions →</button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-[#F8F9FA] text-gray-500 border-y border-gray-100">
+                <tr>
+                  <th class="py-2.5 px-3 font-semibold">Référence & Client</th>
+                  <th class="py-2.5 px-3 font-semibold">Canal & Pays</th>
+                  <th class="py-2.5 px-3 font-semibold">Montant Net</th>
+                  <th class="py-2.5 px-3 font-semibold">Statut</th>
+                  <th class="py-2.5 px-3 font-semibold text-right">Horodatage</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr class="hover:bg-gray-50">
+                  <td class="py-3 px-3"><div class="font-mono font-bold">CMD-8921</div><div class="text-[11px] text-gray-400 font-mono">+237 699 ••• 122</div></td>
+                  <td class="py-3 px-3"><div class="font-semibold">Orange Money</div><div class="text-[11px] text-gray-400">🇨🇲 Cameroun</div></td>
+                  <td class="py-3 px-3 font-mono font-bold">15 000 XAF</td>
+                  <td class="py-3 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Confirmé</span></td>
+                  <td class="py-3 px-3 text-right text-gray-400">Il y a 3 min</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="py-3 px-3"><div class="font-mono font-bold">CMD-8920</div><div class="text-[11px] text-gray-400 font-mono">+225 070 ••• 884</div></td>
+                  <td class="py-3 px-3"><div class="font-semibold">Wave Money</div><div class="text-[11px] text-gray-400">🇨🇮 Côte d'Ivoire</div></td>
+                  <td class="py-3 px-3 font-mono font-bold">25 000 XOF</td>
+                  <td class="py-3 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Confirmé</span></td>
+                  <td class="py-3 px-3 text-right text-gray-400">Il y a 12 min</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="py-3 px-3"><div class="font-mono font-bold">CMD-8919</div><div class="text-[11px] text-gray-400 font-mono">+237 670 ••• 551</div></td>
+                  <td class="py-3 px-3"><div class="font-semibold">MTN MoMo</div><div class="text-[11px] text-gray-400">🇨🇲 Cameroun</div></td>
+                  <td class="py-3 px-3 font-mono font-bold">50 000 XAF</td>
+                  <td class="py-3 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 animate-pulse">Attente PIN USSD</span></td>
+                  <td class="py-3 px-3 text-right text-gray-400">Il y a 18 min</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: TRANSACTIONS -->
+      <section id="tab-transactions" class="space-y-6 hidden">
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+          <div>
+            <h1 class="text-xl font-bold text-[#0D1B2A]">Historique Complet des Transactions (12 Pays)</h1>
+            <p class="text-xs text-gray-500">Filtrage multi-critères, réconciliation et export comptable.</p>
+          </div>
+          <button class="px-3.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-xs font-semibold">Exporter CSV</button>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+          <div class="text-xs text-gray-500 mb-3">5 transactions récentes affichées</div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-gray-50 text-gray-500">
+                <tr>
+                  <th class="py-2.5 px-3">Réf. KUSA</th>
+                  <th class="py-2.5 px-3">Client</th>
+                  <th class="py-2.5 px-3">Canal</th>
+                  <th class="py-2.5 px-3">Pays</th>
+                  <th class="py-2.5 px-3">Montant Brut</th>
+                  <th class="py-2.5 px-3">Frais KUSA</th>
+                  <th class="py-2.5 px-3">Statut</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr>
+                  <td class="py-3 px-3 font-mono font-bold">tx_98f1a23c</td>
+                  <td class="py-3 px-3 font-mono">+237 699 00 11 22</td>
+                  <td class="py-3 px-3">Orange Money</td>
+                  <td class="py-3 px-3">🇨🇲 Cameroun</td>
+                  <td class="py-3 px-3 font-mono font-bold">15 000 XAF</td>
+                  <td class="py-3 px-3 font-mono text-gray-400">450 XAF</td>
+                  <td class="py-3 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Confirmé</span></td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-3 font-mono font-bold">tx_44b2c901</td>
+                  <td class="py-3 px-3 font-mono">+225 07 00 22 11</td>
+                  <td class="py-3 px-3">Wave</td>
+                  <td class="py-3 px-3">🇨🇮 Côte d'Ivoire</td>
+                  <td class="py-3 px-3 font-mono font-bold">25 000 XOF</td>
+                  <td class="py-3 px-3 font-mono text-gray-400">750 XOF</td>
+                  <td class="py-3 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Confirmé</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: PAYMENT LINKS -->
+      <section id="tab-payment-links" class="space-y-6 hidden">
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+          <div>
+            <h1 class="text-xl font-bold text-[#0D1B2A]">Liens de Paiement (No-Code Payment Links)</h1>
+            <p class="text-xs text-gray-500">Créez des liens de paiement et partagez-les en direct sur WhatsApp ou par QR Code.</p>
+          </div>
+          <button onclick="alert('Modal de création de lien')" class="px-4 py-2 bg-[#0E3B33] text-[#D4AF37] font-bold text-xs rounded-xl shadow-md">+ Créer un Nouveau Lien</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <!-- Card 1 -->
+          <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Actif</span>
+                <span class="text-[11px] text-gray-400">Montant Fixe</span>
+              </div>
+              <h3 class="font-bold text-sm text-[#0D1B2A]">Formation Développeur Mobile Money & Fintech</h3>
+              <div class="text-xl font-extrabold text-[#0E3B33] font-mono mt-2">25 000 XAF</div>
+              <div class="mt-3 p-2 bg-gray-50 rounded-xl border border-gray-100 text-xs font-mono text-gray-600 truncate">https://pay.kusa.cm/l/kusa_fintech_2026</div>
+            </div>
+            <div class="pt-3 border-t border-gray-100 flex items-center justify-between">
+              <span class="text-xs text-gray-500">42 paiements</span>
+              <button onclick="openCheckoutModal('Formation Développeur Mobile Money & Fintech', 25000)" class="px-3 py-1.5 bg-[#0E3B33] text-[#D4AF37] text-xs font-bold rounded-lg">Tester Checkout →</button>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Actif</span>
+                <span class="text-[11px] text-gray-400">Montant Fixe</span>
+              </div>
+              <h3 class="font-bold text-sm text-[#0D1B2A]">Prestation Serveurs Cloud & Hébergement</h3>
+              <div class="text-xl font-extrabold text-[#0E3B33] font-mono mt-2">150 000 XAF</div>
+              <div class="mt-3 p-2 bg-gray-50 rounded-xl border border-gray-100 text-xs font-mono text-gray-600 truncate">https://pay.kusa.cm/l/cloud_afritech_104</div>
+            </div>
+            <div class="pt-3 border-t border-gray-100 flex items-center justify-between">
+              <span class="text-xs text-gray-500">1 paiement</span>
+              <button onclick="openCheckoutModal('Prestation Serveurs Cloud & Hébergement', 150000)" class="px-3 py-1.5 bg-[#0E3B33] text-[#D4AF37] text-xs font-bold rounded-lg">Tester Checkout →</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: PAYOUTS -->
+      <section id="tab-payouts" class="space-y-6 hidden">
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+          <div>
+            <h1 class="text-xl font-bold text-[#0D1B2A]">Soldes & Reversements (Grand Livre Double Entrée)</h1>
+            <p class="text-xs text-gray-500">Gestion mathématique des soldes et demandes de reversements vers compte bancaire / MoMo.</p>
+          </div>
+          <button onclick="executeSimulatedPayout()" class="px-4 py-2 bg-gradient-to-r from-[#D4AF37] to-[#BF9B2F] text-[#0D1B2A] font-bold text-xs rounded-xl shadow-md">Demander un Virement (Payout)</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div class="bg-gradient-to-br from-[#0E3B33] to-[#0D1B2A] text-white p-6 rounded-2xl shadow-md border border-[#D4AF37]/40">
+            <span class="text-xs font-bold text-[#D4AF37] uppercase">Solde Disponible Retirable</span>
+            <div id="payout-balance-display" class="text-3xl font-extrabold font-mono mt-2">12 400 000 <span class="text-sm font-sans text-[#D4AF37]">XAF</span></div>
+            <p class="text-xs text-white/70 mt-3 pt-3 border-t border-white/10">Fonds prêts pour virement bancaire BEAC en J+1 ouvré.</p>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+            <span class="text-xs font-bold text-gray-500 uppercase">Clearing en cours (J+1)</span>
+            <div class="text-3xl font-extrabold font-mono mt-2 text-[#0D1B2A]">3 150 000 <span class="text-sm font-sans text-gray-400">XAF</span></div>
+            <p class="text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">Libération quotidienne par les telcos.</p>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+            <span class="text-xs font-bold text-gray-500 uppercase">Réserve de Garantie (5%)</span>
+            <div class="text-3xl font-extrabold font-mono mt-2 text-[#0D1B2A]">800 000 <span class="text-sm font-sans text-gray-400">XAF</span></div>
+            <p class="text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">Couverture des contestations.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: DEVELOPER -->
+      <section id="tab-developer" class="space-y-6 hidden">
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+          <h1 class="text-xl font-bold text-[#0D1B2A]">Espace Développeurs & Clés API</h1>
+          <p class="text-xs text-gray-500">Clés API publiques/secrètes, signatures HMAC-SHA256 et webhooks.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+          <h3 class="text-sm font-bold text-[#0D1B2A]">Clé Publique (Publishable Key)</h3>
+          <div class="p-3 bg-gray-50 rounded-xl font-mono text-xs border border-gray-200 flex justify-between items-center">
+            <span id="dev-public-key">pk_test_33a1094ba710d5508cd77e2b</span>
+            <button onclick="navigator.clipboard.writeText(document.getElementById('dev-public-key').innerText); alert('Clé publique copiée !')" class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs">Copier</button>
+          </div>
+
+          <h3 class="text-sm font-bold text-[#0D1B2A] pt-2">Clé Secrète (Secret Key — KMS AES-256)</h3>
+          <div class="p-3 bg-gray-50 rounded-xl font-mono text-xs border border-gray-200 flex justify-between items-center">
+            <span id="dev-secret-key">sk_test_••••••••••••••••••••••••••••3a8f</span>
+            <button onclick="document.getElementById('dev-secret-key').innerText='sk_test_77c884912bb0ea510842fe310891ca02'" class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs">Révéler</button>
+          </div>
+
+          <h3 class="text-sm font-bold text-[#0D1B2A] pt-2">Signature HMAC-SHA256 Webhook</h3>
+          <div class="p-3 bg-gray-900 text-white rounded-xl font-mono text-xs space-y-1">
+            <div class="text-[#D4AF37]">X-Kusa-Signature: t=1727560000,v1=9b3a78c1...</div>
+            <div class="text-gray-400 text-[11px]">Vérifiez la signature avec votre secret : whsec_test_12f88902acbd991</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: KYB CONFORMITÉ -->
+      <section id="tab-kyb" class="space-y-6 hidden">
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+          <div>
+            <h1 class="text-xl font-bold text-[#0D1B2A]">Conformité & Validation KYB Entreprise</h1>
+            <p class="text-xs text-gray-500">Conformité réglementaire BEAC / BCEAO pour l'encaissement en Production.</p>
+          </div>
+          <button id="btn-simulate-kyb" onclick="simulateKybApproval()" class="px-4 py-2 bg-[#0E3B33] text-[#D4AF37] font-bold text-xs rounded-xl shadow-md border border-[#D4AF37]/50">
+            ⚡ Simuler Approbation KYB Immédiate
+          </button>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+          <div class="grid grid-cols-4 gap-2 mb-4 text-center">
+            <div class="p-2 rounded-xl bg-[#0E3B33] text-white text-xs font-bold">1. Identité</div>
+            <div class="p-2 rounded-xl bg-[#0E3B33] text-white text-xs font-bold">2. Documents</div>
+            <div class="p-2 rounded-xl bg-gray-100 text-gray-600 text-xs font-medium">3. Dirigeant</div>
+            <div class="p-2 rounded-xl bg-gray-100 text-gray-600 text-xs font-medium">4. Règlement</div>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 flex justify-between items-center text-xs">
+              <div>
+                <strong>Extrait RCCM :</strong> RC/DLA/2024/B/1842
+              </div>
+              <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold">Vérifié</span>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 flex justify-between items-center text-xs">
+              <div>
+                <strong>Identifiant Fiscal Unique (NIU) :</strong> M052418920194P
+              </div>
+              <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold">Vérifié</span>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 flex justify-between items-center text-xs">
+              <div>
+                <strong>Compte Bancaire de Règlement :</strong> Ecobank Cameroun (RIB certifié)
+              </div>
+              <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold">Vérifié</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- CHECKOUT MODAL COMPONENT -->
+  <div id="checkout-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs hidden items-center justify-center p-3">
+    <div class="bg-white rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl border border-gray-100 flex flex-col">
+      <!-- Top African Motif -->
+      <div class="h-2 w-full bg-[#0D1B2A]"></div>
+      <!-- Brand Header -->
+      <div class="bg-[#0E3B33] p-4 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <div class="w-8 h-8 rounded-lg bg-[#0D1B2A] border border-[#D4AF37]/50 flex items-center justify-center font-extrabold text-sm text-[#D4AF37]">K</div>
+          <div>
+            <div class="text-xs font-bold">KUSA CHECKOUT</div>
+            <div class="text-[10px] text-[#D4AF37]">🔒 Paiement 100% Sécurisé</div>
+          </div>
+        </div>
+        <button onclick="closeCheckoutModal()" class="text-white/60 hover:text-white p-1">✕</button>
+      </div>
+
+      <!-- STEP 1: Form -->
+      <div id="checkout-step-1" class="p-5 space-y-4">
+        <div class="text-center p-3.5 bg-[#F6F4EE] rounded-2xl border border-[#EDECE6]">
+          <div class="text-xs text-gray-500 font-medium">Afritech Solutions SARL</div>
+          <div id="checkout-amount-display" class="text-2xl font-extrabold text-[#0D1B2A] font-mono mt-0.5">15 000 <span class="text-sm font-sans text-[#0E3B33]">XAF</span></div>
+          <div id="checkout-title-display" class="text-[11px] text-gray-400 mt-0.5">Commande #CMD-8921</div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-xs font-bold text-gray-700">Moyen de paiement :</label>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <button type="button" class="p-2.5 rounded-xl border border-orange-500 bg-orange-50 font-bold text-left text-gray-900">🇨🇲 Orange Money</button>
+            <button type="button" class="p-2.5 rounded-xl border border-gray-200 text-left text-gray-600">🇨🇲 MTN MoMo</button>
+            <button type="button" class="p-2.5 rounded-xl border border-gray-200 text-left text-gray-600">🇨🇮 Wave Money</button>
+            <button type="button" class="p-2.5 rounded-xl border border-gray-200 text-left text-gray-600">💳 Visa / Master</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Numéro Mobile Money :</label>
+          <div class="flex rounded-xl border border-gray-200 overflow-hidden">
+            <span class="px-3 bg-gray-50 text-xs font-bold text-gray-600 flex items-center border-r">🇨🇲 +237</span>
+            <input type="tel" value="699001122" class="w-full px-3 py-2 text-xs font-mono font-semibold focus:outline-none">
+          </div>
+        </div>
+
+        <button onclick="triggerUssdPush()" class="w-full py-3 bg-[#0E3B33] hover:bg-[#0D1B2A] text-[#D4AF37] font-extrabold text-xs rounded-xl shadow-md uppercase tracking-wider">
+          Payer Maintenant →
+        </button>
+      </div>
+
+      <!-- STEP 2: USSD Waiting -->
+      <div id="checkout-step-2" class="p-6 text-center space-y-4 hidden">
+        <div class="w-16 h-16 rounded-full bg-[#D4AF37]/20 ussd-pulse flex items-center justify-center mx-auto text-[#0E3B33] font-bold text-2xl">📱</div>
+        <div>
+          <h3 class="font-bold text-sm text-[#0D1B2A]">Prompt USSD Émis</h3>
+          <p class="text-xs text-gray-500 mt-1">Saisissez votre code PIN secret sur votre téléphone (+237 699001122) pour valider.</p>
+        </div>
+        <div class="p-2.5 bg-amber-50 rounded-xl text-amber-800 text-xs font-mono font-bold">
+          Attente de validation : <span id="ussd-timer">45</span>s
+        </div>
+        <button onclick="validateSimulatedPayment()" class="w-full py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-sm">
+          Simuler Saisie PIN Réussie
+        </button>
+      </div>
+
+      <!-- STEP 3: Success -->
+      <div id="checkout-step-3" class="p-6 text-center space-y-4 hidden">
+        <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-3xl font-bold">✓</div>
+        <h3 class="font-extrabold text-base text-[#0D1B2A]">Paiement Confirmé !</h3>
+        <p class="text-xs text-gray-500">Transaction enregistrée avec succès dans le Grand Livre KUSA.</p>
+        <button onclick="closeCheckoutModal()" class="w-full py-2.5 bg-[#0E3B33] text-white font-bold text-xs rounded-xl">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    let currentTab = 'overview';
+    let kybApproved = false;
+    let ussdInterval = null;
+
+    function switchTab(tabId) {
+      document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
+      const activeSection = document.getElementById('tab-' + tabId);
+      if (activeSection) activeSection.classList.remove('hidden');
+
+      document.querySelectorAll('aside nav button').forEach(b => {
+        b.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium text-gray-700 hover:bg-[#F6F4EE] hover:text-[#0E3B33]";
+      });
+
+      const activeNav = document.getElementById('nav-' + tabId);
+      if (activeNav) {
+        activeNav.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold bg-[#0E3B33] text-white shadow-sm";
+      }
+      currentTab = tabId;
+    }
+
+    function setEnvironment(env) {
+      if (env === 'live' && !kybApproved) {
+        alert("Le Mode Production nécessite la validation de votre dossier d'entreprise (KYB). Rendez-vous dans l'onglet Conformité & KYB.");
+        switchTab('kyb');
+        return;
+      }
+
+      const btnSand = document.getElementById('btn-env-sandbox');
+      const btnLive = document.getElementById('btn-env-live');
+      const banner = document.getElementById('banner-sandbox-notice');
+
+      if (env === 'live') {
+        btnLive.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all bg-[#4E7C6B] text-white shadow-md";
+        btnSand.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all text-white/70 hover:text-white";
+        if (banner) banner.classList.add('hidden');
+        document.getElementById('dev-public-key').innerText = "pk_live_89f0293da820c7419ef00b1a";
+      } else {
+        btnSand.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all bg-[#D4AF37] text-[#0D1B2A] shadow-md";
+        btnLive.className = "flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all text-white/70 hover:text-white";
+        if (banner) banner.classList.remove('hidden');
+        document.getElementById('dev-public-key').innerText = "pk_test_33a1094ba710d5508cd77e2b";
+      }
+    }
+
+    function simulateKybApproval() {
+      const btn = document.getElementById('btn-simulate-kyb');
+      btn.innerText = "Audit KUSA en cours...";
+      setTimeout(() => {
+        kybApproved = true;
+        btn.innerText = "✓ Dossier Approuvé (Live Débloqué)";
+        btn.className = "px-4 py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl";
+        document.getElementById('badge-nav-kyb').innerText = "Validé";
+        document.getElementById('badge-nav-kyb').className = "text-[10px] px-1.5 py-0.5 rounded font-medium bg-emerald-100 text-emerald-800";
+        document.getElementById('sidebar-kyb-dot').className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+        document.getElementById('sidebar-kyb-text').innerText = "Compte Vérifié (Live)";
+        document.getElementById('badge-kyb-required').classList.add('hidden');
+        setEnvironment('live');
+        alert("Félicitations ! Votre dossier d'entreprise a été validé. Le mode Production est désormais actif avec vos clés d'API réelles.");
+      }, 1200);
+    }
+
+    function openCheckoutModal(title, amount) {
+      document.getElementById('checkout-title-display').innerText = title || "Commande #CMD-8921";
+      document.getElementById('checkout-amount-display').innerHTML = (amount || 15000).toLocaleString('fr-FR') + ' <span class="text-sm font-sans text-[#0E3B33]">XAF</span>';
+      document.getElementById('checkout-step-1').classList.remove('hidden');
+      document.getElementById('checkout-step-2').classList.add('hidden');
+      document.getElementById('checkout-step-3').classList.add('hidden');
+      document.getElementById('checkout-modal').classList.remove('hidden');
+      document.getElementById('checkout-modal').classList.add('flex');
+    }
+
+    function closeCheckoutModal() {
+      if (ussdInterval) clearInterval(ussdInterval);
+      document.getElementById('checkout-modal').classList.add('hidden');
+      document.getElementById('checkout-modal').classList.remove('flex');
+    }
+
+    function triggerUssdPush() {
+      document.getElementById('checkout-step-1').classList.add('hidden');
+      document.getElementById('checkout-step-2').classList.remove('hidden');
+      let t = 45;
+      document.getElementById('ussd-timer').innerText = t;
+      if (ussdInterval) clearInterval(ussdInterval);
+      ussdInterval = setInterval(() => {
+        t--;
+        if (t <= 0) {
+          clearInterval(ussdInterval);
+          validateSimulatedPayment();
+        } else {
+          document.getElementById('ussd-timer').innerText = t;
+        }
+      }, 1000);
+    }
+
+    function validateSimulatedPayment() {
+      if (ussdInterval) clearInterval(ussdInterval);
+      document.getElementById('checkout-step-2').classList.add('hidden');
+      document.getElementById('checkout-step-3').classList.remove('hidden');
+    }
+
+    function executeSimulatedPayout() {
+      const amount = prompt("Entrez le montant en XAF à décaisser vers votre compte bancaire Ecobank :", "2000000");
+      if (amount && !isNaN(amount)) {
+        alert("Virement de " + parseInt(amount).toLocaleString('fr-FR') + " XAF initié avec succès vers Ecobank Cameroun. Réf: VIR-2026-09-994 (Clearing BEAC J+1).");
+      }
+    }
+  </script>
+</body>
+</html>
