@@ -160,7 +160,7 @@ export const CoverageMapSection: React.FC = () => {
             <div className="flex flex-wrap sm:inline-flex p-1.5 rounded-2xl bg-white border border-gray-200 shadow-xs gap-1 max-w-full justify-center">
               <button
                 onClick={() => setSelectedZone("ALL")}
-                className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                className={`px-3 sm:px-4 py-2 min-h-[44px] rounded-xl text-xs font-bold transition-all ${
                   selectedZone === "ALL"
                     ? "bg-[#0E3B33] text-white shadow-xs"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
@@ -170,7 +170,7 @@ export const CoverageMapSection: React.FC = () => {
               </button>
               <button
                 onClick={() => setSelectedZone("CEMAC")}
-                className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                className={`px-3 sm:px-4 py-2 min-h-[44px] rounded-xl text-xs font-bold transition-all ${
                   selectedZone === "CEMAC"
                     ? "bg-[#0E3B33] text-white shadow-xs"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
@@ -180,7 +180,7 @@ export const CoverageMapSection: React.FC = () => {
               </button>
               <button
                 onClick={() => setSelectedZone("UEMOA")}
-                className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                className={`px-3 sm:px-4 py-2 min-h-[44px] rounded-xl text-xs font-bold transition-all ${
                   selectedZone === "UEMOA"
                     ? "bg-[#0E3B33] text-white shadow-xs"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
@@ -190,7 +190,7 @@ export const CoverageMapSection: React.FC = () => {
               </button>
               <button
                 onClick={() => setSelectedZone("RDC")}
-                className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                className={`px-3 sm:px-4 py-2 min-h-[44px] rounded-xl text-xs font-bold transition-all ${
                   selectedZone === "RDC"
                     ? "bg-[#0E3B33] text-white shadow-xs"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"

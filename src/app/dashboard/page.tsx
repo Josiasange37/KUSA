@@ -72,7 +72,7 @@ export default function Home() {
         />
 
         {/* Center Content View */}
-        <main className="flex-1 p-3.5 sm:p-6 pb-24 lg:pb-6 overflow-y-auto">
+        <main className="flex-1 p-3.5 sm:p-6 pb-[calc(6rem_+_env(safe-area-inset-bottom))] lg:pb-6 overflow-y-auto">
           {/* Notification Banner when in Sandbox */}
           {environment === "sandbox" && (
             <div className="mb-6 p-4 bg-[#EAE6D8]/80 border border-[#DBAE40]/40 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
@@ -339,11 +339,12 @@ export default function Home() {
       {/* Mobile Bottom Navigation Bar (Sticky bottom for quick tab switching on small screens) */}
       <nav
         aria-label="Navigation mobile"
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#071D14]/95 backdrop-blur-md border-t border-[#DBAE40]/30 px-3 py-2 flex items-center justify-around shadow-2xl"
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#071D14]/95 backdrop-blur-md border-t border-[#DBAE40]/30 px-2 pt-2 pb-[calc(0.5rem_+_env(safe-area-inset-bottom))] flex items-center justify-around shadow-2xl"
       >
         <button
           onClick={() => setActiveTab("overview")}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
+          aria-current={activeTab === "overview" ? "page" : undefined}
+          className={`flex flex-col items-center justify-center min-h-[44px] py-1 px-2.5 rounded-xl transition-all ${
             activeTab === "overview"
               ? "text-[#DBAE40] font-bold"
               : "text-[#A0A8AE] hover:text-white"
@@ -355,7 +356,8 @@ export default function Home() {
 
         <button
           onClick={() => setActiveTab("transactions")}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
+          aria-current={activeTab === "transactions" ? "page" : undefined}
+          className={`flex flex-col items-center justify-center min-h-[44px] py-1 px-2.5 rounded-xl transition-all ${
             activeTab === "transactions"
               ? "text-[#DBAE40] font-bold"
               : "text-[#A0A8AE] hover:text-white"
@@ -367,7 +369,8 @@ export default function Home() {
 
         <button
           onClick={() => setActiveTab("payment-links")}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all ${
+          aria-current={activeTab === "payment-links" ? "page" : undefined}
+          className={`flex flex-col items-center justify-center min-h-[44px] py-1 px-2.5 rounded-xl transition-all ${
             activeTab === "payment-links"
               ? "text-[#DBAE40] font-bold"
               : "text-[#A0A8AE] hover:text-white"
@@ -379,7 +382,7 @@ export default function Home() {
 
         <button
           onClick={() => handleOpenCheckoutModal()}
-          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[#DBAE40] hover:text-[#f3cc68] transition-all"
+          className="flex flex-col items-center justify-center min-h-[44px] py-1 px-2.5 rounded-xl text-[#DBAE40] hover:text-[#f3cc68] transition-all"
         >
           <div className="w-7 h-7 rounded-full bg-[#DBAE40] text-[#071D14] flex items-center justify-center mb-0.5 shadow-sm font-bold">
             <CreditCard className="w-4 h-4" />
@@ -389,7 +392,7 @@ export default function Home() {
 
         <button
           onClick={() => setMobileSidebarOpen(true)}
-          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[#A0A8AE] hover:text-white transition-all"
+          className="flex flex-col items-center justify-center min-h-[44px] py-1 px-2.5 rounded-xl text-[#A0A8AE] hover:text-white transition-all"
         >
           <Menu className="w-5 h-5 mb-0.5" />
           <span className="text-[10px] font-jura">Menu</span>

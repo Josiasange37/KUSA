@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useEffect } from "react";
 import Link from "next/link";
 import {
   LayoutDashboard,
@@ -92,6 +94,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setActiveTab(id);
     if (onClose) onClose();
   };
+
+  // Mobile drawer: lock background scroll, close on Escape
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && onClose) onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   const sidebarContent = (
     <>
@@ -202,7 +222,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Mobile Drawer: Appears from LEFT with clean hero cream background */}
       {isOpen && (
-        <div className="fixed inset-0 z-[100] lg:hidden w-screen h-screen min-h-screen bg-[#F6F4EE] text-[#101E29] flex flex-col justify-between overflow-y-auto animate-in slide-in-from-left duration-300">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation du tableau de bord"
+          className="fixed inset-0 z-[100] lg:hidden w-full h-full bg-[#F6F4EE] text-[#101E29] flex flex-col justify-between overflow-y-auto overscroll-contain animate-in slide-in-from-left duration-300"
+        >
           {/* Subtle woven background pattern texture just like hero section */}
           <div
             className="absolute top-0 right-0 h-full w-full pointer-events-none select-none z-0 opacity-20"
@@ -246,7 +271,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {onClose && (
                 <button
                   onClick={onClose}
-                  className="w-10 h-10 rounded-full bg-white hover:bg-[#EAE8E0] active:scale-95 flex items-center justify-center text-[#0B3E33] border border-[#E3E5E2] transition-all shadow-2xs"
+                  className="min-h-[44px] min-w-[44px] rounded-full bg-white hover:bg-[#EAE8E0] active:scale-95 flex items-center justify-center text-[#0B3E33] border border-[#E3E5E2] transition-all shadow-2xs"
                   aria-label="Fermer le menu"
                 >
                   <X className="w-5 h-5 text-[#0B3E33]" />
@@ -268,7 +293,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <button
                     key={item.id}
                     onClick={() => handleSelectTab(item.id)}
-                    className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm transition-all font-jura ${
+                    className={`w-full flex items-center justify-between px-3.5 py-3 min-h-[44px] rounded-xl text-sm transition-all font-jura ${
                       isActive
                         ? "bg-[#0B3E33] text-white shadow-xs font-bold"
                         : "text-[#101E29] hover:bg-[#EAE8E0]/70 hover:text-[#0B3E33] font-semibold"
@@ -301,11 +326,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
           {/* Footer & Vitrine Back Link */}
-          <div className="relative z-10 p-6 border-t border-[#E3E5E2] bg-[#F6F4EE]/90 space-y-3">
+          <div className="relative z-10 px-6 pt-6 pb-[calc(1.5rem_+_env(safe-area-inset-bottom))] border-t border-[#E3E5E2] bg-[#F6F4EE]/90 space-y-3">
             <Link
               href="/"
               onClick={onClose}
-              className="w-full py-3 px-4 rounded-full bg-white hover:bg-[#EAE8E0] text-[#0B3E33] border border-[#E3E5E2] flex items-center justify-center space-x-2 text-xs font-jura font-bold transition-colors shadow-2xs"
+              className="w-full min-h-[44px] py-3 px-4 rounded-full bg-white hover:bg-[#EAE8E0] text-[#0B3E33] border border-[#E3E5E2] flex items-center justify-center space-x-2 text-xs font-jura font-bold transition-colors shadow-2xs"
             >
               <span>← Retour au Site Vitrine KUSA</span>
             </Link>

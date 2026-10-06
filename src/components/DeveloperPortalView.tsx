@@ -422,8 +422,8 @@ export const DeveloperPortalView: React.FC<DeveloperPortalViewProps> = ({
 
       {/* Rotation Modal */}
       {showRotationModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-start sm:items-center justify-center p-4 pt-[calc(1rem_+_env(safe-area-inset-top))] pb-[calc(1rem_+_env(safe-area-inset-bottom))] overflow-y-auto overscroll-contain">
+          <div role="dialog" aria-modal="true" className="bg-white rounded-2xl max-w-md w-full my-auto p-6 space-y-4 shadow-2xl">
             <div className="flex items-center space-x-2 text-[#0E3B33]">
               <RefreshCw className="w-5 h-5 text-[#D4AF37]" />
               <h3 className="font-bold text-base text-[#0D1B2A]">

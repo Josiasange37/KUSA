@@ -12,7 +12,7 @@ interface HeroSectionProps {
 export const HeroSection: React.FC<HeroSectionProps> = () => {
   return (
     <section
-      className="relative bg-[#F6F4EE] overflow-hidden w-full mt-[62px] min-h-[calc(100vh-62px)] flex items-center"
+      className="relative bg-[#F6F4EE] overflow-hidden w-full mt-[62px] vh-safe flex items-center"
       style={{
         boxSizing: "border-box",
       }}
@@ -33,7 +33,7 @@ export const HeroSection: React.FC<HeroSectionProps> = () => {
 
       {/* Main Container (occupies full height of viewport) */}
       <div
-        className="mx-auto h-full min-h-[calc(100vh-62px)] flex flex-col lg:flex-row items-center justify-between px-4 sm:px-8 lg:px-12 xl:px-[160px] max-w-7xl w-full relative z-10 py-8 sm:py-12 lg:py-0 lg:pb-16"
+        className="mx-auto h-full vh-safe flex flex-col lg:flex-row items-center justify-between px-4 sm:px-8 lg:px-12 xl:px-[160px] max-w-7xl w-full relative z-10 py-8 sm:py-12 lg:py-0 lg:pb-16"
         style={{
           boxSizing: "border-box",
           isolation: "isolate",

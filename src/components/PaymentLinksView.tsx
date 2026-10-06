@@ -221,8 +221,8 @@ export const PaymentLinksView: React.FC<PaymentLinksViewProps> = ({
 
       {/* Modal Création de Lien */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-start sm:items-center justify-center p-4 pt-[calc(1rem_+_env(safe-area-inset-top))] pb-[calc(1rem_+_env(safe-area-inset-bottom))] overflow-y-auto overscroll-contain">
+          <div role="dialog" aria-modal="true" className="bg-white rounded-2xl max-w-md w-full my-auto p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <h3 className="font-bold text-base text-[#0D1B2A]">
                 Créer un Lien de Paiement Sans Code
@@ -307,8 +307,8 @@ export const PaymentLinksView: React.FC<PaymentLinksViewProps> = ({
 
       {/* QR Code Modal */}
       {qrModalLink && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl text-center">
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-start sm:items-center justify-center p-4 pt-[calc(1rem_+_env(safe-area-inset-top))] pb-[calc(1rem_+_env(safe-area-inset-bottom))] overflow-y-auto overscroll-contain">
+          <div role="dialog" aria-modal="true" className="bg-white rounded-2xl max-w-sm w-full my-auto p-6 space-y-4 shadow-2xl text-center">
             <h3 className="font-bold text-sm text-[#0D1B2A]">
               QR Code de Paiement KUSA
             </h3>

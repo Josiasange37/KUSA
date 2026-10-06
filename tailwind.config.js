@@ -38,7 +38,12 @@ module.exports = {
         roboto: ["'Roboto'", "sans-serif"],
         "roboto-mono": ["'Roboto Mono'", "monospace"],
       },
+      screens: {
+        xs: "480px",
+      },
       boxShadow: {
+        xs: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        "2xs": "0 1px 1px 0 rgb(0 0 0 / 0.05)",
         kusa: "0 4px 20px -2px rgba(14, 59, 51, 0.08)",
         "kusa-lg": "0 10px 30px -4px rgba(13, 27, 42, 0.12)",
         "kusa-gold": "0 8px 25px -4px rgba(212, 175, 55, 0.28)",

@@ -43,6 +43,24 @@ export const CheckoutWidgetModal: React.FC<CheckoutWidgetModalProps> = ({
     return () => clearInterval(interval);
   }, [step, timer]);
 
+  // Lock background scroll + allow Escape to dismiss
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleTriggerPayment = (e: React.FormEvent) => {
@@ -63,8 +81,8 @@ export const CheckoutWidgetModal: React.FC<CheckoutWidgetModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl border border-gray-100 flex flex-col">
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-start sm:items-center justify-center p-3 sm:p-4 pt-[calc(0.75rem_+_env(safe-area-inset-top))] pb-[calc(0.75rem_+_env(safe-area-inset-bottom))] overflow-y-auto overscroll-contain animate-in fade-in duration-200">
+      <div role="dialog" aria-modal="true" aria-label="Checkout KUSA" className="bg-white rounded-3xl max-w-sm w-full my-auto overflow-hidden shadow-2xl border border-gray-100 flex flex-col">
         {/* African Heritage Header */}
         <AfricanMotifPattern className="h-2 w-full bg-[#0D1B2A]" variant="gold" />
 
@@ -85,7 +103,7 @@ export const CheckoutWidgetModal: React.FC<CheckoutWidgetModalProps> = ({
 
           <button
             onClick={handleReset}
-            className="text-white/60 hover:text-white p-1 rounded-full hover:bg-white/10"
+            className="text-white/60 hover:text-white min-h-[44px] min-w-[44px] p-2.5 rounded-full hover:bg-white/10 flex items-center justify-center shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -117,7 +135,7 @@ export const CheckoutWidgetModal: React.FC<CheckoutWidgetModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setSelectedChannel("orange")}
-                  className={`p-2.5 rounded-xl border text-left flex items-center space-x-2 transition-all ${
+                  className={`p-2.5 min-h-[44px] rounded-xl border text-left flex items-center space-x-2 transition-all ${
                     selectedChannel === "orange"
                       ? "border-orange-500 bg-orange-50/50 ring-1 ring-orange-500"
                       : "border-gray-200 hover:bg-gray-50"
@@ -138,7 +156,7 @@ export const CheckoutWidgetModal: React.FC<CheckoutWidgetModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setSelectedChannel("mtn")}
-                  className={`p-2.5 rounded-xl border text-left flex items-center space-x-2 transition-all ${
+                  className={`p-2.5 min-h-[44px] rounded-xl border text-left flex items-center space-x-2 transition-all ${
                     selectedChannel === "mtn"
                       ? "border-yellow-500 bg-yellow-50/50 ring-1 ring-yellow-500"
                       : "border-gray-200 hover:bg-gray-50"
@@ -159,7 +177,7 @@ export const CheckoutWidgetModal: React.FC<CheckoutWidgetModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setSelectedChannel("wave")}
-                  className={`p-2.5 rounded-xl border text-left flex items-center space-x-2 transition-all ${
+                  className={`p-2.5 min-h-[44px] rounded-xl border text-left flex items-center space-x-2 transition-all ${
                     selectedChannel === "wave"
                       ? "border-sky-500 bg-sky-50/50 ring-1 ring-sky-500"
                       : "border-gray-200 hover:bg-gray-50"
@@ -180,7 +198,7 @@ export const CheckoutWidgetModal: React.FC<CheckoutWidgetModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setSelectedChannel("card")}
-                  className={`p-2.5 rounded-xl border text-left flex items-center space-x-2 transition-all ${
+                  className={`p-2.5 min-h-[44px] rounded-xl border text-left flex items-center space-x-2 transition-all ${
                     selectedChannel === "card"
                       ? "border-indigo-500 bg-indigo-50/50 ring-1 ring-indigo-500"
                       : "border-gray-200 hover:bg-gray-50"
@@ -222,7 +240,7 @@ export const CheckoutWidgetModal: React.FC<CheckoutWidgetModalProps> = ({
             {/* Pay Button */}
             <button
               type="submit"
-              className="w-full py-3 bg-[#0E3B33] hover:bg-[#0D1B2A] text-[#D4AF37] font-extrabold text-xs rounded-xl shadow-kusa-gold transition-transform hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center space-x-2 uppercase tracking-wide"
+              className="w-full min-h-[44px] py-3.5 bg-[#0E3B33] hover:bg-[#0D1B2A] text-[#D4AF37] font-extrabold text-xs rounded-xl shadow-kusa-gold transition-transform hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center space-x-2 uppercase tracking-wide"
             >
               <span>Payer {amount.toLocaleString("fr-FR")} {currency}</span>
               <ArrowRight className="w-4 h-4" />
@@ -267,7 +285,7 @@ export const CheckoutWidgetModal: React.FC<CheckoutWidgetModalProps> = ({
               <button
                 type="button"
                 onClick={handleSimulatePinValidation}
-                className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center space-x-1.5"
+                className="w-full min-h-[44px] py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center space-x-1.5"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Simuler Saisie PIN Réussie</span>
@@ -309,7 +327,7 @@ export const CheckoutWidgetModal: React.FC<CheckoutWidgetModalProps> = ({
 
             <button
               onClick={handleReset}
-              className="w-full py-2.5 bg-[#0E3B33] hover:bg-[#0D1B2A] text-white font-bold text-xs rounded-xl shadow-sm"
+              className="w-full min-h-[44px] py-2.5 bg-[#0E3B33] hover:bg-[#0D1B2A] text-white font-bold text-xs rounded-xl shadow-sm"
             >
               Terminer & Fermer
             </button>

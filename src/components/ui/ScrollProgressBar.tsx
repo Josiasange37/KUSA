@@ -21,7 +21,7 @@ export const ScrollProgressBar: React.FC = () => {
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 h-[2.5px] z-[60] pointer-events-none"
+      className="fixed top-[env(safe-area-inset-top)] left-0 right-0 h-[2.5px] z-[60] pointer-events-none"
       aria-hidden="true"
     >
       <div

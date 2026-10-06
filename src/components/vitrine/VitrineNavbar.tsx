@@ -32,13 +32,24 @@ export const VitrineNavbar: React.FC<VitrineNavbarProps> = () => {
     };
   }, [mobileMenuOpen]);
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mobileMenuOpen]);
+
   return (
+    <>
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-200 ${
         scrolled ? "bg-white/95 backdrop-blur-md shadow-xs" : "bg-[#F6F4EE]/95 backdrop-blur-sm"
       }`}
       style={{
-        height: "62px",
+        height: "calc(62px + env(safe-area-inset-top))",
+        paddingTop: "env(safe-area-inset-top)",
         boxSizing: "border-box",
         borderBottom: "1px solid #E3E5E2",
       }}
@@ -173,14 +184,14 @@ export const VitrineNavbar: React.FC<VitrineNavbarProps> = () => {
         <div className="flex md:hidden items-center space-x-2">
           <Link
             href="/dashboard"
-            className="flex items-center justify-center font-jura text-[12px] font-bold text-white px-3.5 py-1.5 rounded-full bg-[#0B3E33] whitespace-nowrap shadow-2xs active:scale-95 transition-transform"
+            className="flex items-center justify-center font-jura text-[12px] font-bold text-white min-h-[44px] px-4 rounded-full bg-[#0B3E33] whitespace-nowrap shadow-2xs active:scale-95 transition-transform"
             style={{ fontFamily: "'Jura', sans-serif" }}
           >
             Démarrer
           </Link>
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="p-2 text-[#0B3E33] hover:text-black rounded-lg focus:outline-none active:bg-black/5"
+            className="min-h-[44px] min-w-[44px] p-2.5 text-[#0B3E33] hover:text-black rounded-lg focus:outline-none active:bg-black/5 flex items-center justify-center"
             aria-label="Ouvrir le menu"
             aria-expanded={mobileMenuOpen}
           >
@@ -189,9 +200,11 @@ export const VitrineNavbar: React.FC<VitrineNavbarProps> = () => {
         </div>
       </div>
 
+      </header>
+
       {/* Full-Screen Mobile Navigation Menu appearing from the LEFT */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-[100] w-screen h-screen min-h-screen bg-[#F6F4EE] text-[#101E29] flex flex-col justify-between overflow-y-auto animate-in slide-in-from-left duration-300">
+        <div role="dialog" aria-modal="true" aria-label="Menu de navigation" className="md:hidden fixed inset-0 z-[100] w-full h-full bg-[#F6F4EE] text-[#101E29] flex flex-col justify-between overflow-y-auto overscroll-contain animate-in slide-in-from-left duration-300">
           {/* Subtle woven geometry pattern background overlay just like the hero section */}
           <div
             className="absolute top-0 right-0 h-full w-full pointer-events-none select-none z-0 opacity-20"
@@ -205,10 +218,10 @@ export const VitrineNavbar: React.FC<VitrineNavbarProps> = () => {
           />
 
           {/* Top Gold & Green Accent Bar */}
-          <div className="w-full h-1 bg-gradient-to-r from-[#0B3E33] via-[#DBAE40] to-[#0B3E33]" />
+          <div className="w-full h-1 mt-[env(safe-area-inset-top)] bg-gradient-to-r from-[#0B3E33] via-[#DBAE40] to-[#0B3E33]" />
 
           {/* Top Bar: Brand Logo & Close Button */}
-          <div className="relative z-10 flex items-center justify-between px-6 pt-5 pb-4 border-b border-[#E3E5E2]">
+          <div className="relative z-10 flex items-center justify-between px-6 pt-[calc(1.25rem_+_env(safe-area-inset-top))] pb-4 border-b border-[#E3E5E2]">
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
@@ -233,7 +246,7 @@ export const VitrineNavbar: React.FC<VitrineNavbarProps> = () => {
 
             <button
               onClick={() => setMobileMenuOpen(false)}
-              className="w-10 h-10 rounded-full bg-white hover:bg-[#EAE8E0] active:scale-95 flex items-center justify-center text-[#0B3E33] border border-[#E3E5E2] transition-all shadow-2xs"
+              className="min-h-[44px] min-w-[44px] p-2.5 rounded-full bg-white hover:bg-[#EAE8E0] active:scale-95 flex items-center justify-center text-[#0B3E33] border border-[#E3E5E2] transition-all shadow-2xs"
               aria-label="Fermer le menu"
             >
               <X className="w-5 h-5 text-[#0B3E33]" />
@@ -305,7 +318,7 @@ export const VitrineNavbar: React.FC<VitrineNavbarProps> = () => {
           </div>
 
           {/* Bottom Actions & Footer Info */}
-          <div className="relative z-10 px-6 sm:px-8 pb-8 pt-4 border-t border-[#E3E5E2] space-y-4 bg-[#F6F4EE]/90">
+          <div className="relative z-10 px-6 sm:px-8 pb-[calc(2rem_+_env(safe-area-inset-bottom))] pt-4 border-t border-[#E3E5E2] space-y-4 bg-[#F6F4EE]/90">
             {/* Quick Regional Indicator */}
             <div className="flex items-center justify-between text-xs font-jura text-[#5F6A70]">
               <span className="font-semibold text-[#0B3E33]">12 Pays Africains</span>
@@ -328,6 +341,6 @@ export const VitrineNavbar: React.FC<VitrineNavbarProps> = () => {
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 };

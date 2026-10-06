@@ -129,3 +129,70 @@ h1, h2, h3, h4, .font-heading {
 .ussd-pulse {
   animation: pulseRing 2s infinite cubic-bezier(0.45, 0, 0.55, 1);
 }
+
+/* ---------------- Mobile refinements ---------------- */
+
+/* Instant, invisible tap highlight on touch devices */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Double-tap zoom delay removal on interactive elements (iOS/Android) */
+a,
+button,
+[role="button"],
+[role="tab"],
+input,
+select,
+textarea,
+label,
+summary {
+  touch-action: manipulation;
+}
+
+/* Horizontal scroll containers: contain momentum + prevent page-level
+   rubber-band chaining when swiping tables/code blocks */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* Safe-area aware viewport height for full-screen sections.
+   svh = small viewport height (stable, excludes browser chrome). */
+.vh-safe {
+  min-height: calc(100vh - 62px);
+}
+@supports (height: 100svh) {
+  .vh-safe {
+    min-height: calc(100svh - 62px);
+  }
+}
+
+/* iOS auto-zooms focused inputs below 16px; Android toolbars were built
+   around the same rule. Force a mobile-safe minimum on form controls. */
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+    min-height: 44px;
+  }
+
+  /* Keep option pickers usable with thumbs */
+  select {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
+/* Respect reduced-motion users globally (ScrollReveal already checks in JS) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

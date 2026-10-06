@@ -25,7 +25,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleSidebar,
 }) => {
   return (
-    <header className="sticky top-0 z-40 bg-[#F6F4EE]/95 backdrop-blur-md border-b border-[#E3E5E2] transition-colors">
+    <header className="sticky top-0 z-40 bg-[#F6F4EE]/95 backdrop-blur-md border-b border-[#E3E5E2] transition-colors" style={{ paddingTop: "env(safe-area-inset-top)" }}>
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-[62px]">
           {/* Brand Logo & Organization */}
@@ -33,7 +33,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Mobile Hamburger Drawer Trigger */}
             <button
               onClick={onToggleSidebar}
-              className="lg:hidden p-1.5 text-[#0B3E33] hover:text-black rounded-lg focus:outline-none hover:bg-black/5 active:scale-95 transition-transform"
+              className="lg:hidden min-h-[44px] min-w-[44px] p-2 flex items-center justify-center text-[#0B3E33] hover:text-black rounded-lg focus:outline-none hover:bg-black/5 active:scale-95 transition-transform"
               aria-label="Ouvrir le menu"
             >
               <Menu className="w-5 h-5" />
@@ -41,7 +41,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <Link
               href="/"
-              className="flex items-center space-x-2.5 cursor-pointer group"
+              className="flex items-center space-x-2.5 cursor-pointer group shrink-0"
               title="Retour à l'accueil"
             >
               <div className="relative w-[34px] sm:w-[40px] h-[32px] sm:h-[36px] flex items-center justify-center">
@@ -57,10 +57,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <div className="flex flex-col">
                 <div className="flex items-center space-x-2">
-                  <span className="font-jura font-bold text-xl tracking-wider text-[#0B3E33]">
+                  <span className="font-jura font-bold text-lg sm:text-xl tracking-wider text-[#0B3E33]">
                     KUSA
                   </span>
-                  <span className="text-[10px] font-jura font-semibold px-2 py-0.5 rounded-full bg-[#0B3E33] text-white tracking-widest uppercase">
+                  <span className="hidden sm:inline-flex text-[10px] font-jura font-semibold px-2 py-0.5 rounded-full bg-[#0B3E33] text-white tracking-widest uppercase">
                     PayFac
                   </span>
                 </div>
@@ -88,10 +88,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Center: Environment Toggle Switcher */}
-          <div className="flex items-center bg-[#EAE8E0] p-0.5 sm:p-1 rounded-full border border-[#DCDAD0] shadow-inner">
+          <div className="flex items-center shrink-0 whitespace-nowrap bg-[#EAE8E0] p-0.5 sm:p-1 rounded-full border border-[#DCDAD0] shadow-inner">
             <button
               onClick={() => setEnvironment("sandbox")}
-              className={`flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-jura transition-all ${
+              className={`flex items-center space-x-1 sm:space-x-1.5 px-1.5 sm:px-3 py-1 min-h-[44px] sm:min-h-0 rounded-full text-[11px] sm:text-xs font-jura transition-all ${
                 environment === "sandbox"
                   ? "bg-[#DBAE40] text-[#101E29] font-bold shadow-xs"
                   : "text-[#78848A] hover:text-[#0B3E33] font-medium"
@@ -116,7 +116,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   );
                 }
               }}
-              className={`flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-jura transition-all ${
+              className={`flex items-center space-x-1 sm:space-x-1.5 px-1.5 sm:px-3 py-1 min-h-[44px] sm:min-h-0 rounded-full text-[11px] sm:text-xs font-jura transition-all ${
                 environment === "live"
                   ? "bg-[#0B3E33] text-white font-bold shadow-xs"
                   : kybApproved
@@ -136,7 +136,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="hidden sm:inline">Production (Live)</span>
               <span className="sm:hidden">Live</span>
               {!kybApproved && (
-                <span className="text-[9px] px-1 py-0.2 bg-[#DCDAD0] rounded-full text-[#78848A] font-semibold">
+                <span className="hidden sm:inline-flex text-[9px] px-1 py-0.5 bg-[#DCDAD0] rounded-full text-[#78848A] font-semibold">
                   KYB
                 </span>
               )}
@@ -144,20 +144,24 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Right: Quick Actions, Checkout Demo & User */}
-          <div className="flex items-center space-x-1.5 sm:space-x-3">
-            {/* Live Interactive Checkout Trigger */}
+          <div className="flex items-center space-x-1.5 sm:space-x-3 shrink-0">
+            {/* Live Interactive Checkout Trigger (icon-only on mobile to keep the header uncrowded) */}
             <button
               onClick={onOpenCheckoutModal}
-              className="flex items-center space-x-1.5 sm:space-x-2 bg-[#0B3E33] hover:bg-[#101E29] text-white font-jura font-semibold text-xs px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="flex items-center justify-center sm:space-x-1.5 md:space-x-2 bg-[#0B3E33] hover:bg-[#101E29] text-white font-jura font-semibold text-xs min-h-[44px] px-3 sm:px-4 sm:min-h-0 py-1.5 sm:py-2 rounded-full shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98]"
               title="Tester le widget de paiement"
+              aria-label="Tester le checkout"
             >
-              <CreditCard className="w-3.5 h-3.5 text-[#DBAE40]" />
+              <CreditCard className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-[#DBAE40]" />
+              <span className="hidden sm:inline md:hidden">Checkout</span>
               <span className="hidden md:inline">Tester le Checkout</span>
-              <span className="hidden xs:inline md:hidden">Checkout</span>
             </button>
 
-            {/* Notification Bell */}
-            <button className="relative p-1.5 sm:p-2 text-[#78848A] hover:text-[#0B3E33] rounded-full hover:bg-[#E8E6DE] transition-colors">
+            {/* Notification Bell (hidden on small screens: decorative, no panel yet) */}
+            <button
+              className="hidden sm:block relative p-1.5 sm:p-2 text-[#78848A] hover:text-[#0B3E33] rounded-full hover:bg-[#E8E6DE] transition-colors"
+              aria-label="Notifications"
+            >
               <Bell className="w-4 h-4" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#DBAE40] rounded-full ring-2 ring-[#F6F4EE]" />
             </button>

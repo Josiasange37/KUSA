@@ -12,6 +12,13 @@ export const SmoothScrollProvider: React.FC<{ children: React.ReactNode }> = ({
     // Only initialize in browser environment
     if (typeof window === "undefined") return;
 
+    // Respect users who asked for reduced motion: keep native scrolling
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
