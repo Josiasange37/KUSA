@@ -11,12 +11,15 @@ export function CodeWindow({
   response,
   responseLabel = "Réponse",
   className = "",
+  split = false,
 }: {
   title: string;
   samples: Sample[];
   response?: string;
   responseLabel?: string;
   className?: string;
+  /** Request and response side by side on large screens */
+  split?: boolean;
 }) {
   const [active, setActive] = useState(0);
   const [copied, setCopied] = useState(false);
@@ -91,30 +94,37 @@ export function CodeWindow({
         </div>
       )}
 
-      {/* Request */}
-      <div
-        id={`${base}-panel`}
-        role={samples.length > 1 ? "tabpanel" : undefined}
-        aria-labelledby={samples.length > 1 ? `${base}-tab-${active}` : undefined}
-        tabIndex={0}
-        className="overflow-x-auto px-4 py-4"
-      >
-        <pre className="code text-[11.5px] sm:text-[13px]">
-          <code>{current.code}</code>
-        </pre>
-      </div>
-
-      {/* Response */}
-      {response && (
-        <div className="border-t border-[#17222C]">
-          <p className="px-4 pt-3 font-jura font-bold text-[11px] text-[#6E8090]">{responseLabel}</p>
-          <div className="overflow-x-auto px-4 pb-4 pt-1.5" tabIndex={0}>
-            <pre className="code text-[11.5px] sm:text-[13px]" style={{ color: "#5FB585" }}>
-              <code>{response}</code>
-            </pre>
-          </div>
+      <div className={split && response ? "lg:grid lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]" : ""}>
+        {/* Request */}
+        <div
+          id={`${base}-panel`}
+          role={samples.length > 1 ? "tabpanel" : undefined}
+          aria-labelledby={samples.length > 1 ? `${base}-tab-${active}` : undefined}
+          tabIndex={0}
+          className="overflow-x-auto px-4 py-4 min-w-0"
+        >
+          <pre className="code text-[11.5px] sm:text-[13px]">
+            <code>{current.code}</code>
+          </pre>
         </div>
-      )}
+
+        {/* Response */}
+        {response && (
+          <div className={`border-t border-[#17222C] min-w-0 ${split ? "lg:border-t-0 lg:border-l" : ""}`}>
+            <p className="px-4 pt-3 font-jura font-bold text-[11px] text-[#6E8090] flex items-center gap-2">
+              {responseLabel.replace(/\s*\d{3}$/, "")}
+              {/\d{3}$/.test(responseLabel) && (
+                <span className="font-mono text-[10.5px] px-1.5 py-[1px] rounded bg-[#1F8A5B]/20 text-[#5FB585]">{responseLabel.match(/\d{3}$/)?.[0]}</span>
+              )}
+            </p>
+            <div className="overflow-x-auto px-4 pb-4 pt-1.5" tabIndex={0}>
+              <pre className="code text-[11.5px] sm:text-[13px]" style={{ color: "#5FB585" }}>
+                <code>{response}</code>
+              </pre>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
