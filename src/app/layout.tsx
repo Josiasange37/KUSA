@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { Navbar } from "@/components/kusa/Navbar";
 import { Footer } from "@/components/kusa/Footer";
@@ -36,11 +37,13 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang="fr" data-theme="light" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="min-h-screen flex flex-col">
+        <Script id="kusa-theme" strategy="beforeInteractive">
+          {THEME_INIT}
+        </Script>
         <a className="skip" href="#contenu">
           Aller au contenu
         </a>
