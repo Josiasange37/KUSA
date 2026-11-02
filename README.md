@@ -1,43 +1,46 @@
-# KUSA — L'Infrastructure de Paiement des Entreprises Africaines
+# KUSA — site et espace marchand
 
-> L'agrégateur de paiement unifié pour l'Afrique subsaharienne (12 pays). Encaissez par Mobile Money (Orange, MTN, Wave, Moov, Airtel) et Cartes bancaires avec une API moderne, un Dashboard unifié et des Liens de Paiement No-Code.
+Agrégateur de paiement pour les commerces du Cameroun (Orange Money, MTN MoMo, cartes, en XAF).
+Architecture calquée sur la logique de jeko.africa, demandée par Freemo. Le contexte produit est dans [PRODUCT.md](PRODUCT.md).
 
----
+## Pages
 
-## 🌍 Marchés Couverts (12 Pays)
-- **Zone CEMAC** : Cameroun 🇨🇲, Gabon 🇬🇦, Congo 🇨🇬, Tchad 🇹🇩, RCA 🇨🇫, Guinée Équatoriale 🇬🇶
-- **Zone UEMOA** : Côte d'Ivoire 🇨🇮, Sénégal 🇸🇳, Bénin 🇧🇯, Togo 🇹🇬, Burkina Faso 🇧🇫
-- **RDC** 🇨🇩
+| Route | Rôle |
+| --- | --- |
+| `/` | Accueil : solutions comparées, démo de lien de paiement, secteurs, étapes, partenaires, tarifs, FAQ |
+| `/solutions/liens-de-paiement` · `/paiement-en-boutique` · `/paiement-en-ligne` | Une page par solution |
+| `/tarifs` | Formules Standard et Grands volumes |
+| `/a-propos` | Présentation et statut juridique |
+| `/contact` | **Contacter le service** : formulaire envoyé par email (Resend) à contact@kusa.cm. `?objet=Tarifs` pré-remplit l'objet |
+| `/inscription` | **Créer un compte avec email + mot de passe** (Supabase Auth) |
+| `/connexion` | Connexion, et `?oubli=1` pour le mot de passe oublié |
+| `/tableau-de-bord` | Espace marchand protégé par le middleware |
+| `/auth/confirm` | Retour des liens email Supabase (confirmation, réinitialisation) |
 
----
-
-## 🚀 Fonctionnalités
-- **Widget de Paiement Multi-Canal** : Intégration en pop-in ou page hébergée, optimisée mobile (Orange Money, MTN MoMo, Wave, Moov, Airtel, Cartes Visa/Mastercard 3DS2).
-- **Liens de Paiement No-Code** : Création instantanée et partageable par WhatsApp, SMS, QR code.
-- **Portail Développeurs & API** : Documentation interactive, clés d'API (Sandbox / Live), webhooks signés HMAC-SHA256, logs en direct.
-- **Grand Livre à Double Entrée (Payouts)** : Traçabilité des soldes disponibles, fonds en clearing et réserves de garantie.
-- **Conformité & KYB** : Parcours d'onboarding conforme aux réglementations BEAC / BCEAO.
-
----
-
-## 🛠️ Stack Technique
-- **Framework** : [Next.js 15](https://nextjs.org/) (App Router, React 19, TypeScript)
-- **Styling** : [Tailwind CSS](https://tailwindcss.com/)
-- **Smooth Scroll** : [Lenis](https://lenis.darkroom.engineering/)
-- **Icons** : [Lucide React](https://lucide.dev/)
-
----
-
-## 💻 Démarrage Local
+## Démarrer
 
 ```bash
-# Installer les dépendances
+cp .env.example .env.local   # puis remplir les clés
 npm install
-
-# Lancer le serveur de développement
 npm run dev
 ```
 
-Ouvrez [http://localhost:3000](http://localhost:3000) pour afficher la vitrine et [http://localhost:3000/dashboard](http://localhost:3000/dashboard) pour le tableau de bord.
-# KUSA
-# KUSA
+Sans clés, le site fonctionne : les formulaires affichent un message invitant à écrire à contact@kusa.cm.
+
+## Configurer Supabase
+
+1. Créer un projet sur supabase.com, copier l'URL et la clé `anon` dans `.env.local`.
+2. Authentication > Providers > Email : activé, avec « Confirm email » au choix. Si la confirmation est désactivée, l'inscription connecte directement.
+3. Authentication > URL Configuration : ajouter `https://<votre-domaine>/auth/confirm` aux Redirect URLs.
+4. Les modèles d'email par défaut fonctionnent (flux PKCE : le lien revient sur `/auth/confirm?code=…`). Le lien doit alors être ouvert dans le même navigateur. Pour que le lien marche aussi depuis un autre appareil, remplacer `{{ .ConfirmationURL }}` dans les modèles par
+   `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type={{ .Type }}` (le parcours de réinitialisation redirige alors vers le tableau de bord par défaut).
+
+Les infos marchand (nom, activité, type, téléphone) sont enregistrées dans `user_metadata`.
+
+## Configurer l'envoi du formulaire de contact
+
+Créer une clé API sur resend.com, vérifier le domaine `kusa.cm`, puis renseigner `RESEND_API_KEY`, `CONTACT_FROM` et `CONTACT_TO`.
+
+## Déployer sur Vercel
+
+Ajouter les mêmes variables d'environnement dans Vercel > Settings > Environment Variables, puis redéployer.

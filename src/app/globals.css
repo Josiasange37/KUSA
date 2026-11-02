@@ -1,143 +1,129 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Jura:wght@400;600;700&family=Junge&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Jura:wght@400;500;600;700&family=Junge&family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap");
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* ─────────────────────────────────────────────
+   KUSA brand, carried over 1:1 from the original KUSA repo
+   Junge (display) · Jura (text) · Roboto / Inter (UI) · Roboto Mono (code)
+   ───────────────────────────────────────────── */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  /* Brand tokens. Light values are the original KUSA hex codes;
+     the dark palette overrides them further down. */
+  --color-forest: #0b3e33; /* headings & brand ink */
+  --color-brand: #0b3e33; /* filled buttons */
+  --color-on-gold: #0b3e33; /* text on gold, both themes */
+  --color-forest-deep: #071d14;
+  --color-gold: #dbae40;
+  --color-cream: #f6f4ee; /* page ground */
+  --color-surface: #ffffff; /* cards, bars */
+  --color-surface-2: #efece2; /* hover, tiles */
+  --color-navy: #0d1b2a;
+  --color-night: #101e29;
+  --color-slate: #78848a;
+  --color-ink-2: #3b4a50; /* running text */
+  --color-line: #e3e5e2;
+  --color-line-2: #dfe3e8;
+  --color-mint: #e7f2ed;
+  --color-warn-bg: #f9f2de;
+  --color-warn-ink: #6b4f0e;
+  --color-err-bg: #fbeae8;
+  --color-err-line: #f0c6c1;
+  --color-err-ink: #8c1d14;
+
+  --font-junge: "Junge", serif;
+  --font-jura: "Jura", sans-serif;
+  --font-roboto: "Roboto", sans-serif;
+  --font-inter: "Inter", system-ui, sans-serif;
+  --font-mono: "Roboto Mono", ui-monospace, monospace;
+
+  --breakpoint-xs: 480px;
+
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-2xs: 0 1px 1px 0 rgb(0 0 0 / 0.05);
+}
 
 :root {
-  --kusa-forest: #0E3B33;
-  --kusa-navy: #0D1B2A;
-  --kusa-gold: #D4AF37;
-  --kusa-cream: #F6F4EE;
-  --kusa-sage: #4E7C6B;
-  --font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --nav-h: 64px;
+  color-scheme: light;
+}
+@media (min-width: 1024px) {
+  :root {
+    --nav-h: 72px;
+  }
 }
 
-/* Lenis smooth scroll configuration */
-html.lenis,
-html.lenis body {
-  height: auto;
+/* ───────── KUSA dark: forest night, gold kept as the one accent ───────── */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  /* Near-black neutral greys; KUSA green kept for actions, gold as the accent */
+  --color-forest: #ecebe6;
+  --color-brand: #145a48;
+  --color-cream: #161717;
+  --color-surface: #1e1f1f;
+  --color-surface-2: #272828;
+  --color-navy: #ecebe6;
+  --color-slate: #9b9f9d;
+  --color-ink-2: #c8cac6;
+  --color-line: #2c2e2e;
+  --color-line-2: #363838;
+  --color-mint: #1d2321;
+  --color-warn-bg: #2a2416;
+  --color-warn-ink: #e8c96f;
+  --color-err-bg: #2b1715;
+  --color-err-line: #55302b;
+  --color-err-ink: #f2a59b;
+  --color-night: #0a0a0a;
+}
+[data-theme="dark"] body {
+  background-color: #161717;
+  color: #ecebe6;
+}
+[data-theme="dark"] .woven {
+  opacity: 0.07 !important;
+}
+/* Partner logos need a light chip to stay legible on the dark ground */
+[data-theme="dark"] .logo-chip {
+  background: #f3f1ea;
+  border-radius: 8px;
+  padding: 4px 6px;
+  box-sizing: content-box;
+}
+[data-theme="dark"] .logo-tile {
+  background: #ece9e0;
+}
+[data-theme="dark"] ::selection {
+  color: #fff;
 }
 
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-
-.lenis.lenis-scrolling iframe {
-  pointer-events: none;
+html.theme-anim,
+html.theme-anim * {
+  transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease !important;
 }
 
 html {
-  scroll-behavior: auto;
+  -webkit-tap-highlight-color: transparent;
+  scroll-padding-top: calc(var(--nav-h) + 16px);
 }
 
 body {
-  background-color: #F8F9FA;
-  color: #0D1B2A;
-  font-family: var(--font-sans);
+  background-color: var(--color-cream);
+  color: var(--color-navy);
+  font-family: "Inter", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
-
-h1, h2, h3, h4, .font-heading {
-  font-family: var(--font-heading);
-}
-
-/* Custom scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #F1F1F1;
-}
-::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
-}
-
-/* Glassmorphism */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(229, 231, 235, 0.75);
-}
-
-.glass-panel-dark {
-  background: rgba(13, 27, 42, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(212, 175, 55, 0.18);
-}
-
-.glass-nav {
-  background: rgba(14, 59, 51, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-}
-
-/* Gold shimmer animation */
-@keyframes goldShimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.gold-shimmer {
-  background: linear-gradient(90deg, #D4AF37 0%, #FFF3BF 50%, #D4AF37 100%);
-  background-size: 200% 100%;
-  animation: goldShimmer 3s infinite linear;
-}
-
-.gold-text-gradient {
-  background: linear-gradient(135deg, #ECC850 0%, #D4AF37 50%, #B88E1C 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Subtle dot grid pattern */
-.dot-pattern {
-  background-image: radial-gradient(rgba(212, 175, 55, 0.15) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-.dot-pattern-forest {
-  background-image: radial-gradient(rgba(14, 59, 51, 0.08) 1.5px, transparent 1.5px);
-  background-size: 24px 24px;
-}
-
-/* Pulse ring animation for USSD waiting */
-@keyframes pulseRing {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.6); }
-  70% { transform: scale(1); box-shadow: 0 0 0 14px rgba(212, 175, 55, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
-}
-
-.ussd-pulse {
-  animation: pulseRing 2s infinite cubic-bezier(0.45, 0, 0.55, 1);
-}
-
-/* ---------------- Mobile refinements ---------------- */
-
-/* Instant, invisible tap highlight on touch devices */
 html {
-  -webkit-tap-highlight-color: transparent;
+  overflow-x: clip;
 }
 
-/* Double-tap zoom delay removal on interactive elements (iOS/Android) */
+::selection {
+  background: rgb(219 174 64 / 0.3);
+  color: #0d1b2a;
+}
+
 a,
 button,
 [role="button"],
@@ -150,42 +136,378 @@ summary {
   touch-action: manipulation;
 }
 
-/* Horizontal scroll containers: contain momentum + prevent page-level
-   rubber-band chaining when swiping tables/code blocks */
+:focus-visible {
+  outline: 2px solid #dbae40;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.skip {
+  position: absolute;
+  left: 16px;
+  top: -80px;
+  z-index: 200;
+  background: #0b3e33;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-family: "Jura", sans-serif;
+  font-weight: 700;
+}
+.skip:focus {
+  top: 12px;
+}
+
+/* Safe-area aware first screen under the fixed bar (from the original hero) */
+.vh-safe {
+  min-height: calc(100vh - var(--nav-h));
+}
+@supports (height: 100svh) {
+  .vh-safe {
+    min-height: calc(100svh - var(--nav-h));
+  }
+}
+
+/* Woven geometry field, the hero's right-hand texture */
+.woven {
+  background-image: url("/images/hero-woven-geometry.png");
+  background-repeat: repeat;
+  background-position: top left;
+  background-size: 471px auto;
+}
+
+/* Developer band: dark forest with the Bogolan texture */
+.dev-band {
+  background: linear-gradient(90deg, #071d14 0%, #0b291e 20%, #0e2e24 50%, #0b291e 80%, #071d14 100%);
+  isolation: isolate;
+  position: relative;
+}
+.dev-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url("/images/dev-full-bg-texture.png");
+  background-size: 100% 100%;
+  background-position: center;
+  opacity: 0.9;
+  pointer-events: none;
+}
+.dev-band::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #0b3e33;
+}
+
+@keyframes swipeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.92);
+  }
+  12% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  85% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+}
+@keyframes swipeHand {
+  0%,
+  15% {
+    transform: translateX(6px) rotate(-8deg);
+  }
+  45% {
+    transform: translateX(-10px) rotate(-14deg);
+  }
+  60%,
+  100% {
+    transform: translateX(6px) rotate(-8deg);
+  }
+}
+@keyframes swipeArrow {
+  0%,
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(5px);
+    opacity: 0.6;
+  }
+}
+.swipe-hint {
+  animation: swipeIn 3.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.swipe-hand {
+  animation: swipeHand 1.3s ease-in-out 2;
+}
+.swipe-arrow {
+  animation: swipeArrow 0.9s ease-in-out infinite;
+}
+
+.snap-row {
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+.snap-row::-webkit-scrollbar {
+  display: none;
+}
+
 .overflow-x-auto {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
 }
 
-/* Safe-area aware viewport height for full-screen sections.
-   svh = small viewport height (stable, excludes browser chrome). */
-.vh-safe {
-  min-height: calc(100vh - 62px);
-}
-@supports (height: 100svh) {
-  .vh-safe {
-    min-height: calc(100svh - 62px);
-  }
+/* Code */
+.code {
+  font-family: "Roboto Mono", monospace;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #acbac5;
+  white-space: pre;
+  margin: 0;
 }
 
-/* iOS auto-zooms focused inputs below 16px; Android toolbars were built
-   around the same rule. Force a mobile-safe minimum on form controls. */
+/* Inline code inside docs prose */
+.prose-kusa :not(pre) > code {
+  font-family: "Roboto Mono", monospace;
+  font-size: 0.86em;
+  background: var(--color-mint);
+  color: var(--color-forest);
+  padding: 1px 6px;
+  border-radius: 5px;
+}
+
+/* Form controls */
+.kfield label {
+  display: block;
+  font-family: "Jura", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-forest);
+  margin-bottom: 8px;
+}
+.kfield input:not([type="checkbox"]),
+.kfield select,
+.kfield textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-2);
+  border-radius: 10px;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  color: var(--color-navy);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.kfield textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+.kfield input:focus,
+.kfield select:focus,
+.kfield textarea:focus {
+  outline: none;
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px rgb(219 174 64 / 0.2);
+}
+.kfield [aria-invalid="true"] {
+  border-color: var(--color-err-ink);
+}
+.kfield .hint {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--color-slate);
+}
+.kfield .err {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--color-err-ink);
+  font-weight: 500;
+}
+
+.hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* FAQ disclosure */
+.faq-item summary {
+  list-style: none;
+  cursor: pointer;
+}
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+.faq-plus {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.faq-item[open] .faq-plus {
+  transform: rotate(45deg);
+}
+
+/* Menus */
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.menu-in {
+  animation: menuIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes drawerItem {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.drawer-item {
+  animation: drawerItem 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.slide-in-left {
+  animation: slideInLeft 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ───────── Auth screens ───────── */
+@keyframes kRise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes kStepIn {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes kStepBack {
+  from {
+    opacity: 0;
+    transform: translateY(-32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes kPop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.phrase-in {
+  animation: kPhrase 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes kPhrase {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+.auth-rise {
+  animation: kRise 0.7s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.step-in {
+  animation: kStepIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.step-back {
+  animation: kStepBack 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.pop {
+  animation: kPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Typeform-style answer field: large, underlined */
+.tf-input {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid var(--color-line-2);
+  padding: 10px 2px 12px;
+  font-family: "Jura", sans-serif;
+  font-weight: 600;
+  font-size: clamp(22px, 2.6vw, 30px);
+  color: var(--color-forest);
+  transition: border-color 0.2s;
+  border-radius: 0;
+}
+.tf-input::placeholder {
+  color: var(--color-slate);
+  opacity: 0.55;
+}
+.tf-input:focus {
+  outline: none;
+  border-bottom-color: var(--color-gold);
+}
+.tf-input[aria-invalid="true"] {
+  border-bottom-color: var(--color-err-ink);
+}
+
 @media (max-width: 767px) {
-  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  input:not([type="checkbox"]):not([type="radio"]):not(.tf-input),
   select,
   textarea {
     font-size: 16px !important;
-    min-height: 44px;
-  }
-
-  /* Keep option pickers usable with thumbs */
-  select {
-    padding-top: 8px;
-    padding-bottom: 8px;
   }
 }
 
-/* Respect reduced-motion users globally (ScrollReveal already checks in JS) */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -195,4 +517,25 @@ summary {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Dark: brand bands sit on black, the Bogolan texture stays as the African signature */
+[data-theme="dark"] .dev-band {
+  background: #0a0b0b;
+}
+[data-theme="dark"] .dev-band::before {
+  opacity: 0.45;
+}
+[data-theme="dark"] .dev-band::after {
+  background: #dbae40;
+  opacity: 0.6;
+}
+[data-theme="dark"] .cta-card {
+  background: #1e1f1f !important;
+  border: 1px solid #2a2c2c;
+}
+
+[tabindex="-1"]:focus,
+[tabindex="-1"]:focus-visible {
+  outline: none;
 }

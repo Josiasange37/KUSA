@@ -1,5 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { Navbar } from "@/components/kusa/Navbar";
+import { Footer } from "@/components/kusa/Footer";
+import { getUser } from "@/lib/supabase";
+import { SiteChrome } from "@/components/kusa/theme";
+import { THEME_INIT } from "@/lib/theme-init";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -10,32 +15,45 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "KUSA — L'Infrastructure de Paiement des Entreprises Africaines",
-  description: "L'agrégateur de paiement unifié pour l'Afrique subsaharienne (12 pays). Encaissez par Mobile Money (Orange, MTN, Wave, Moov, Airtel) et Cartes bancaires avec une API moderne et des Liens de Paiement No-Code.",
-  keywords: ["paiement afrique", "mobile money api", "orange money", "mtn momo", "wave cote d'ivoire", "fintech cemac uemoa", "kusa paiement"],
-  icons: {
-    icon: [
-      { url: "/images/kusa-logo-icon.png", sizes: "any", type: "image/png" },
-      { url: "/favicon.ico" },
-    ],
-    shortcut: "/images/kusa-logo-icon.png",
-    apple: "/images/kusa-logo-icon.png",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://kusa-five.vercel.app"),
+  title: {
+    default: "KUSA, l'infrastructure de paiement des entreprises africaines",
+    template: "%s · KUSA",
+  },
+  description:
+    "Boutiques, supermarchés, bars, hôtels et startups : encaissez Orange Money, MTN Mobile Money et les cartes en XAF, au comptoir, par lien ou par API, sur un seul compte KUSA.",
+  icons: { icon: "/images/kusa-logo-icon.png", apple: "/images/kusa-logo-icon.png" },
+  openGraph: {
+    type: "website",
+    locale: "fr_CM",
+    siteName: "KUSA",
+    images: ["/images/hero-woman-hires.png"],
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const user = await getUser();
   return (
-    <html lang="fr" className="h-full scroll-smooth">
+    <html lang="fr" data-theme="light" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="min-h-full flex flex-col bg-[#F8F9FA] text-[#0D1B2A] antialiased selection:bg-[#D4AF37]/30 selection:text-[#0D1B2A] overflow-x-hidden">
-        {children}
+      <body className="min-h-screen flex flex-col">
+        <a className="skip" href="#contenu">
+          Aller au contenu
+        </a>
+        <SiteChrome>
+          <Navbar signedIn={Boolean(user)} />
+          <div aria-hidden="true" style={{ height: "calc(var(--nav-h) + env(safe-area-inset-top))" }} />
+        </SiteChrome>
+        <main id="contenu" className="flex-1">
+          {children}
+        </main>
+        <SiteChrome>
+          <Footer />
+        </SiteChrome>
       </body>
     </html>
   );
