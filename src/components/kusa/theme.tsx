@@ -69,8 +69,8 @@ export function ThemeToggle({ className = "", bare = false }: { className?: stri
   );
 }
 
-/* Sign-in and sign-up are full-screen: no navbar, no footer. */
-export const BARE_ROUTES = ["/connexion", "/inscription"];
+/* Sign-in, sign-up and the merchant dashboard bring their own frame: no site navbar, no footer. */
+export const BARE_ROUTES = ["/connexion", "/inscription", "/tableau-de-bord"];
 
 export function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

@@ -3,7 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 import { Navbar } from "@/components/kusa/Navbar";
 import { Footer } from "@/components/kusa/Footer";
-import { getUser } from "@/lib/supabase";
+import { getDemoUser } from "@/lib/demo-session";
 import { SiteChrome } from "@/components/kusa/theme";
 import { THEME_INIT } from "@/lib/theme-init";
 
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const user = await getUser();
+  const user = await getDemoUser();
   return (
     <html lang="fr" data-theme="light" suppressHydrationWarning>
       <head>

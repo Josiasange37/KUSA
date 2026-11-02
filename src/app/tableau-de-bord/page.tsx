@@ -1,130 +1,206 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { getUser } from "@/lib/supabase";
-import { signOut } from "@/app/actions";
-import { NewPasswordForm } from "@/components/kusa/forms";
-import { Arrow, Label } from "@/components/kusa/home";
-import { SOLUTIONS } from "@/lib/content";
+import { getDashboard } from "@/lib/dashboard";
+import { CHANNELS, SOURCES, fmtDate, fmtPct, fmtTime, fmtXAF, hourIn, plural } from "@/lib/demo-data";
+import { CHANNEL_VAR, ChannelTag, DemoNote, Kpi, PageHead, Panel, PanelHead, StatusPill, TextLink } from "@/components/dashboard/ui";
+import { VolumeChart } from "@/components/dashboard/VolumeChart";
 
-export const metadata: Metadata = { title: "Mon espace", robots: { index: false } };
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Vue d'ensemble" };
 
-export default async function DashboardPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ "nouveau-mot-de-passe"?: string }>;
-}) {
-  const user = await getUser();
-  if (!user) redirect("/connexion?suite=/tableau-de-bord");
-  const sp = await searchParams;
-  const meta = (user.user_metadata ?? {}) as Record<string, string>;
-  const first = (meta.full_name ?? "").split(" ")[0];
+const QUICK = [
+  { href: "/tableau-de-bord/encaisser", label: "Encaisser en boutique", icon: <path d="M12 5v14M5 12h14" /> },
+  { href: "/tableau-de-bord/liens?nouveau=1", label: "Créer un lien", icon: <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" /> },
+  { href: "/tableau-de-bord/developpeurs", label: "Clés d'API", icon: <path d="M8 9l-4 3 4 3M16 9l4 3-4 3M13.5 6l-3 12" /> },
+];
+
+export default async function Overview({ searchParams }: { searchParams: Promise<{ bienvenue?: string }> }) {
+  const { user, data } = await getDashboard();
+  const { kpi } = data;
+  const welcome = (await searchParams).bienvenue === "1";
+  const first = user.name.split(" ")[0];
+  const trend = (a: number, b: number) => (b > 0 ? (a - b) / b : null);
+  const splitTotal = data.split.reduce((s, c) => s + c.amount, 0) || 1;
+  const hour = hourIn(data.now);
+
+  const steps = [
+    { label: "Compte créé", done: true },
+    { label: "Activité renseignée", done: user.business !== "Votre activité" },
+    { label: "Pièces justificatives (RCCM, CNI)", done: false, href: "/tableau-de-bord/parametres" },
+    { label: "Premier encaissement test", done: false, href: "/tableau-de-bord/encaisser" },
+    { label: "Vérification par l'équipe KUSA", done: false },
+  ];
+  const doneCount = steps.filter((s) => s.done).length;
 
   return (
-    <div className="bg-cream">
-      <section className="relative overflow-hidden">
-        <div className="hidden md:block absolute top-0 right-0 bottom-0 w-[38%] woven pointer-events-none" aria-hidden="true" />
-        <div className="relative mx-auto max-w-[1200px] px-4 sm:px-8 xl:px-0 py-12 sm:py-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="flex flex-col gap-3">
-            <Label>Mon espace</Label>
-            <h1 className="font-junge text-[34px] sm:text-[48px] leading-[110%] text-forest">Bonjour{first ? `, ${first}` : ""}</h1>
-            <p className="font-jura font-bold text-[16px] text-slate">{meta.business_name ?? "Votre activité"}</p>
-          </div>
-          <form action={signOut} className="md:bg-surface/90 md:p-2 md:rounded-full">
-            <button type="submit" className="inline-flex items-center h-[44px] px-5 rounded-full bg-surface border border-line-2 text-forest font-jura font-bold text-[14px] transition-all hover:bg-surface-2 active:scale-95">
-              Se déconnecter
-            </button>
-          </form>
-        </div>
-      </section>
+    <>
+      <PageHead
+        title={`${hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir"}, ${first}`}
+        sub={<>{fmtDate(data.now, { weekday: "long", day: "numeric", month: "long" })} · {user.business}</>}
+      />
 
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-8 xl:px-0 pb-16 sm:pb-24 flex flex-col gap-5">
-        {sp["nouveau-mot-de-passe"] === "1" && (
-          <section aria-labelledby="pw-h" className="bg-surface rounded-[16px] border border-line p-6 sm:p-8">
-            <h2 id="pw-h" className="font-roboto font-bold text-[18px] text-forest mb-5">
-              Choisir un nouveau mot de passe
-            </h2>
-            <NewPasswordForm />
-          </section>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-5">
-          <section aria-labelledby="dossier-h" className="bg-surface rounded-[16px] border border-line p-6 sm:p-8 shadow-[0px_8px_18px_rgba(21,42,32,0.07)]">
-            <div className="flex items-center justify-between gap-3 mb-5 flex-wrap">
-              <h2 id="dossier-h" className="font-roboto font-bold text-[18px] text-forest">
-                Votre dossier
-              </h2>
-              <span className="inline-flex items-center gap-2 h-[26px] px-3 rounded-full bg-warn-bg font-inter font-medium text-[12px] text-warn-ink">
-                <span className="w-1.5 h-1.5 rounded-full bg-gold" aria-hidden="true" />
-                En cours de vérification
+      {welcome && (
+        <div className="mb-6 rounded-[18px] dev-band overflow-hidden p-5 sm:p-6 step-in">
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <span className="pop flex-none w-11 h-11 rounded-full bg-[#1F8A5B] flex items-center justify-center">
+                <svg width="20" height="16" viewBox="0 0 9 7" fill="none" aria-hidden="true">
+                  <path d="M1 3.5L3.33333 5.5L8 1" stroke="#fff" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </span>
-            </div>
-            <dl className="flex flex-col">
-              {[
-                ["Activité", meta.business_name],
-                ["Type", meta.business_type],
-                ["Téléphone", meta.phone],
-                ["Email", user.email],
-              ].map(([k, v], i) => (
-                <div key={k} className={`grid grid-cols-[110px_1fr] gap-4 py-3 ${i ? "border-t border-line" : ""}`}>
-                  <dt className="font-jura font-bold text-[14px] text-slate">{k}</dt>
-                  <dd className="font-inter text-[15px] text-navy break-words">{v || "—"}</dd>
-                </div>
-              ))}
-            </dl>
-            <p className="mt-5 font-inter text-[14px] leading-[155%] text-ink-2">
-              L&apos;équipe KUSA vérifie votre activité avant d&apos;activer les paiements réels. En attendant, préparez votre
-              intégration en sandbox.
-            </p>
-          </section>
-
-          <section aria-labelledby="keys-h" className="dev-band rounded-[16px] overflow-hidden p-6 sm:p-8">
-            <div className="relative z-10 flex flex-col gap-4 h-full">
-              <h2 id="keys-h" className="font-jura font-bold text-[20px] text-[#F0F2F2]">
-                Clés d&apos;API
-              </h2>
-              <div className="rounded-[12px] bg-[#07131E] border border-white/[0.06] p-4 flex flex-col gap-1.5">
-                <span className="font-jura font-bold text-[12px] text-[#8896A4]">Clé de test</span>
-                <code className="font-mono text-[13px] text-[#ACBAC5] break-all">En attente d&apos;émission</code>
+              <div>
+                <p className="font-junge text-[22px] sm:text-[26px] leading-tight text-[#F3F4F1]">Bienvenue chez KUSA, {first}.</p>
+                <p className="font-inter text-[14px] text-[#A9BDBA] mt-1">Votre espace marchand est prêt. Faites un premier encaissement test pour découvrir le parcours.</p>
               </div>
-              <p className="font-roboto font-light text-[14px] leading-[155%] text-[#A1AFBA]">
-                Vos clés s&apos;affichent ici dès leur émission par l&apos;équipe KUSA. La clé de production arrive après
-                validation du dossier.
-              </p>
-              <Link href="/developpeurs" className="group mt-auto inline-flex items-center gap-2 self-start h-[42px] px-5 rounded-full bg-gold text-on-gold font-jura font-bold text-[14px] transition-all hover:brightness-105 active:scale-95">
-                Lire la documentation
-                <Arrow />
+            </div>
+            <Link href="/tableau-de-bord/encaisser" className="self-start sm:self-auto inline-flex items-center h-[44px] px-5 rounded-full bg-gold text-on-gold font-jura font-bold text-[14px] whitespace-nowrap">
+              Faire un test
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Quick actions: thumb-friendly on phones */}
+      <ul className="snap-row flex gap-2.5 overflow-x-auto -mx-4 px-4 mb-5 lg:hidden">
+        {QUICK.map((q) => (
+          <li key={q.href} className="flex-none">
+            <Link href={q.href} className="inline-flex items-center gap-2 h-[44px] pl-3 pr-4 rounded-full bg-surface border border-line-2 font-jura font-bold text-[14px] text-forest active:scale-[0.97] transition-transform">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                {q.icon}
+              </svg>
+              {q.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+
+      {/* KPIs */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-5">
+        <Kpi label="Aujourd'hui" value={fmtXAF(kpi.today)} trend={trend(kpi.today, kpi.yesterdaySoFar)} foot={`${plural(kpi.todayCount, "paiement")} · vs hier à la même heure`} />
+        <Kpi label="7 derniers jours" value={fmtXAF(kpi.week)} trend={trend(kpi.week, kpi.weekPrev)} foot="vs 7 jours précédents" />
+        <Kpi label="Taux de réussite" value={fmtPct(kpi.successRate)} foot="sur 30 jours" />
+        <Kpi label="Panier moyen" value={fmtXAF(kpi.avgTicket)} foot={`${plural(kpi.monthCount, "paiement")} en 30 j`} />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-5">
+        {/* Volume chart */}
+        <Panel aria-labelledby="vol-h">
+          <PanelHead id="vol-h" title="Encaissements réussis" sub="14 derniers jours, par moyen de paiement" action={<TextLink href="/tableau-de-bord/transactions">Détail</TextLink>} />
+          <VolumeChart series={data.series} />
+        </Panel>
+
+        <div className="flex flex-col gap-5">
+          {/* Balance & next payout */}
+          <section aria-labelledby="bal-h" className="rounded-[18px] dev-band overflow-hidden p-5 sm:p-6">
+            <div className="relative z-10 flex flex-col gap-3">
+              <h2 id="bal-h" className="font-jura font-bold text-[14px] text-[#A1AFBA]">
+                Solde à reverser
+              </h2>
+              <p className="font-roboto font-bold text-[30px] leading-none text-[#F3F4F1] tabular-nums">{fmtXAF(data.balance)}</p>
+              {data.nextPayout && (
+                <p className="font-inter text-[13.5px] leading-[150%] text-[#A9BDBA]">
+                  Prochain reversement {fmtDate(data.nextPayout.at, { weekday: "long", hour: "2-digit", minute: "2-digit" })} vers {data.nextPayout.destination}.
+                </p>
+              )}
+              <Link href="/tableau-de-bord/reversements" className="self-start mt-1 inline-flex items-center h-[38px] px-4 rounded-full bg-gold text-on-gold font-jura font-bold text-[13.5px]">
+                Voir les reversements
               </Link>
             </div>
           </section>
+
+          {/* Channel split */}
+          <Panel aria-labelledby="split-h">
+            <PanelHead id="split-h" title="Moyens de paiement" sub="Part du montant encaissé, 30 jours" />
+            <ul className="px-5 sm:px-6 pb-5 flex flex-col gap-3.5">
+              {data.split.map((c) => {
+                const share = c.amount / splitTotal;
+                return (
+                  <li key={c.key} className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between gap-3">
+                      <ChannelTag channel={c.key} label={c.label} />
+                      <span className="font-inter text-[13px] text-slate tabular-nums">
+                        <span className="text-forest font-medium">{fmtPct(share)}</span> · {c.count}
+                      </span>
+                    </div>
+                    <span className="h-2 rounded-full bg-surface-2 overflow-hidden" aria-hidden="true">
+                      <span className="block h-full rounded-full" style={{ width: `${share * 100}%`, background: CHANNEL_VAR[c.key] }} />
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </Panel>
         </div>
 
-        <section aria-labelledby="sol-h" className="flex flex-col gap-4 pt-4">
-          <h2 id="sol-h" className="font-junge text-[26px] text-forest">
-            Comment encaisser
-          </h2>
-          <ul className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {SOLUTIONS.map((s) => (
-              <li key={s.slug}>
-                <Link href={`/solutions/${s.slug}`} className="group h-full flex flex-col gap-2 p-5 rounded-[16px] bg-surface border border-line transition-all hover:-translate-y-1 hover:shadow-lg">
-                  <span className="font-roboto font-bold text-[16px] text-forest flex items-center gap-1.5">
-                    {s.name}
-                    <Arrow />
+        {/* Recent transactions */}
+        <Panel aria-labelledby="recent-h">
+          <PanelHead id="recent-h" title="Derniers paiements" sub={kpi.pending ? `${plural(kpi.pending, "paiement")} en attente de validation` : "Tout est à jour"} action={<TextLink href="/tableau-de-bord/transactions">Tout voir</TextLink>} />
+          <ul className="px-2 sm:px-3 pb-3">
+            {data.txs.slice(0, 7).map((t) => (
+              <li key={t.id}>
+                <Link href={`/tableau-de-bord/transactions?id=${t.id}`} className="flex items-center gap-3 px-3 py-3 rounded-[12px] hover:bg-surface-2 transition-colors">
+                  <span className="w-10 h-10 flex-none rounded-[11px] flex items-center justify-center bg-surface-2" aria-hidden="true">
+                    <span className="w-3 h-3 rounded-[4px]" style={{ background: CHANNEL_VAR[t.channel] }} />
                   </span>
-                  <span className="font-jura font-bold text-[13.5px] leading-[150%] text-slate">{s.menu}</span>
+                  <span className="flex-1 min-w-0">
+                    <span className="block font-inter font-medium text-[14.5px] text-forest truncate">{t.label}</span>
+                    <span className="block font-inter text-[12.5px] text-slate truncate">
+                      {fmtTime(t.at)} · {CHANNELS.find((c) => c.key === t.channel)?.short} · {SOURCES[t.source]}
+                    </span>
+                  </span>
+                  <span className="flex flex-col items-end gap-1">
+                    <span className={`font-roboto font-bold text-[14.5px] tabular-nums ${t.status === "failed" ? "text-slate line-through" : "text-forest"}`}>{fmtXAF(t.amount)}</span>
+                    {t.status !== "success" && <StatusPill status={t.status} />}
+                  </span>
                 </Link>
               </li>
             ))}
           </ul>
-          <p className="font-jura font-bold text-[15px] text-slate pt-2">
-            Une question sur votre dossier ?{" "}
-            <Link href="/contact?objet=Ouvrir%20un%20compte" className="text-forest underline underline-offset-4 decoration-gold">
-              Contacter le service
-            </Link>
-          </p>
-        </section>
+        </Panel>
+
+        {/* Activation (Jèko-style onboarding to real payments) */}
+        <Panel aria-labelledby="act-h" className="self-start">
+          <PanelHead id="act-h" title="Activer les paiements réels" sub={`${doneCount} étapes sur ${steps.length}`} />
+          <div className="px-5 sm:px-6">
+            <span className="block h-1.5 rounded-full bg-surface-2 overflow-hidden" aria-hidden="true">
+              <span className="block h-full rounded-full bg-gold" style={{ width: `${(doneCount / steps.length) * 100}%` }} />
+            </span>
+          </div>
+          <ol className="px-3 sm:px-4 py-3">
+            {steps.map((s) => {
+              const body = (
+                <>
+                  <span className={`w-6 h-6 flex-none rounded-full flex items-center justify-center ${s.done ? "bg-ok text-white" : "border-2 border-line-2"}`} aria-hidden="true">
+                    {s.done && (
+                      <svg width="11" height="9" viewBox="0 0 9 7" fill="none">
+                        <path d="M1 3.5L3.33333 5.5L8 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </span>
+                  <span className={`flex-1 font-inter text-[14px] ${s.done ? "text-slate line-through decoration-line-2" : "text-forest"}`}>{s.label}</span>
+                  <span className="sr-only">{s.done ? "terminé" : "à faire"}</span>
+                </>
+              );
+              return (
+                <li key={s.label}>
+                  {s.href && !s.done ? (
+                    <Link href={s.href} className="flex items-center gap-3 min-h-[44px] px-2 rounded-[10px] hover:bg-surface-2 transition-colors">
+                      {body}
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="text-slate">
+                        <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </Link>
+                  ) : (
+                    <div className="flex items-center gap-3 min-h-[44px] px-2">{body}</div>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+          <div className="px-5 sm:px-6 pb-5">
+            <DemoNote>La vérification et l&apos;envoi des pièces arrivent avec la version finale.</DemoNote>
+          </div>
+        </Panel>
       </div>
-    </div>
+    </>
   );
 }

@@ -17,6 +17,17 @@ Architecture calquée sur la logique de jeko.africa, demandée par Freemo. Le co
 | `/tableau-de-bord` | Espace marchand protégé par le middleware |
 | `/auth/confirm` | Retour des liens email Supabase (confirmation, réinitialisation) |
 
+## Mode démo (état actuel)
+
+L'inscription et la connexion sont **simulées** tant que le back-end marchand n'existe pas :
+
+- `src/lib/demo-session.ts` ouvre une session de démo (cookie httpOnly `kusa_demo`, sans mot de passe stocké).
+- `src/lib/demo-data.ts` génère des transactions fictives cohérentes (même marchand = mêmes chiffres) ; tous les totaux, graphiques et reversements en découlent.
+- `src/lib/dashboard.ts` est le point d'entrée unique des pages `/tableau-de-bord/*` : remplacer son contenu par l'utilisateur authentifié et les appels à l'API KUSA, sans toucher aux pages.
+- Un bandeau permanent indique dans l'espace marchand qu'il est en cours de développement.
+
+Pour revenir à une vraie authentification, Supabase reste câblé dans `src/lib/supabase.ts` et `src/app/auth/confirm`.
+
 ## Démarrer
 
 ```bash

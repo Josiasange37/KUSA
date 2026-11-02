@@ -30,6 +30,15 @@
   --color-err-bg: #fbeae8;
   --color-err-line: #f0c6c1;
   --color-err-ink: #8c1d14;
+  /* Charts: payment methods (validated: lightness band, chroma, CVD, contrast) */
+  --color-ch-orange: #b7791f;
+  --color-ch-mtn: #0e7c5b;
+  --color-ch-card: #3a6fd8;
+  /* Status (reserved, always paired with an icon + label) */
+  --color-ok: #1f8a5b;
+  --color-ok-bg: #e5f3ea;
+  --color-wait: #8a6100;
+  --color-wait-bg: #f9f0d9;
 
   --font-junge: "Junge", serif;
   --font-jura: "Jura", sans-serif;
@@ -74,6 +83,13 @@
   --color-err-line: #55302b;
   --color-err-ink: #f2a59b;
   --color-night: #0a0a0a;
+  --color-ch-orange: #c0821e;
+  --color-ch-mtn: #2a9a74;
+  --color-ch-card: #5583e4;
+  --color-ok: #4cc28d;
+  --color-ok-bg: #16281f;
+  --color-wait: #e3b450;
+  --color-wait-bg: #2a2416;
 }
 [data-theme="dark"] body {
   background-color: #161717;
@@ -442,6 +458,17 @@ summary {
 }
 .drawer-item {
   animation: drawerItem 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes sheetUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.sheet-up {
+  animation: sheetUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .slide-in-left {
   animation: slideInLeft 0.28s cubic-bezier(0.16, 1, 0.3, 1);

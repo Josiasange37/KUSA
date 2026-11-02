@@ -1,8 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
-import { createClient, isSupabaseConfigured } from "@/lib/supabase";
+import { endDemoSession, getRememberedProfile, nameFromEmail, startDemoSession } from "@/lib/demo-session";
 import { BUSINESS_TYPES, CONTACT_EMAIL, CONTACT_SUBJECTS } from "@/lib/content";
 
 export type FormState = {
@@ -29,30 +28,12 @@ function passwordOk(p: string) {
   return p.length >= 8 && /[A-Za-z]/.test(p) && /\d/.test(p);
 }
 
-async function siteUrl() {
-  if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
-  const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
-  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-  return `${proto}://${host}`;
-}
 
-const NOT_CONFIGURED = `Les comptes ne sont pas encore activés sur ce site. Écrivez-nous à ${CONTACT_EMAIL}.`;
 
-function authErrorFr(message: string) {
-  const m = message.toLowerCase();
-  if (m.includes("invalid login credentials")) return "Email ou mot de passe incorrect.";
-  if (m.includes("email not confirmed"))
-    return "Votre email n'est pas encore confirmé. Ouvrez le lien reçu par email, puis reconnectez-vous.";
-  if (m.includes("already registered") || m.includes("already been registered"))
-    return "Un compte existe déjà avec cet email. Connectez-vous ou utilisez une autre adresse.";
-  if (m.includes("rate limit") || m.includes("too many"))
-    return "Trop de tentatives. Patientez quelques minutes avant de réessayer.";
-  if (m.includes("password")) return "Ce mot de passe n'est pas accepté. Choisissez-en un plus long ou moins courant.";
-  return "Une erreur est survenue. Réessayez dans un instant.";
-}
 
-/* ───────────── Inscription : email + mot de passe ───────────── */
+/* ───────────── Inscription (démo) ─────────────
+   Same validation as the future real flow; on success a demo session opens
+   and the merchant lands on the dashboard. No account is stored anywhere. */
 export async function signUp(_prev: FormState, fd: FormData): Promise<FormState> {
   const values = {
     fullName: str(fd, "fullName"),
@@ -72,37 +53,20 @@ export async function signUp(_prev: FormState, fd: FormData): Promise<FormState>
   if (!passwordOk(password))
     fieldErrors.password = "Au moins 8 caractères, avec au moins une lettre et un chiffre.";
   if (fd.get("terms") !== "on") fieldErrors.terms = "Acceptez les conditions pour créer votre compte.";
-
   if (Object.keys(fieldErrors).length) return { fieldErrors, values };
-  if (!isSupabaseConfigured()) return { error: NOT_CONFIGURED, values };
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.signUp({
+  await startDemoSession({
+    name: values.fullName,
+    business: values.business,
+    type: values.businessType,
     email: values.email,
-    password,
-    options: {
-      emailRedirectTo: `${await siteUrl()}/auth/confirm?next=${encodeURIComponent("/tableau-de-bord")}`,
-      data: {
-        full_name: values.fullName,
-        business_name: values.business,
-        business_type: values.businessType,
-        phone: values.phone,
-      },
-    },
+    phone: values.phone,
+    createdAt: new Date().toISOString(),
   });
-
-  if (error) return { error: authErrorFr(error.message), values };
-
-  // Confirmation par email désactivée dans Supabase : la session existe déjà.
-  if (data.session) redirect("/tableau-de-bord");
-
-  return {
-    ok: true,
-    message: `Compte créé. Nous avons envoyé un lien de confirmation à ${values.email}. Ouvrez-le pour accéder à votre espace.`,
-  };
+  redirect("/tableau-de-bord?bienvenue=1");
 }
 
-/* ───────────── Connexion ───────────── */
+/* ───────────── Connexion (démo) ───────────── */
 export async function signIn(_prev: FormState, fd: FormData): Promise<FormState> {
   const email = str(fd, "email").toLowerCase();
   const password = raw(fd, "password");
@@ -112,30 +76,32 @@ export async function signIn(_prev: FormState, fd: FormData): Promise<FormState>
   if (!EMAIL_RE.test(email)) fieldErrors.email = "Indiquez l'adresse email de votre compte.";
   if (!password) fieldErrors.password = "Indiquez votre mot de passe.";
   if (Object.keys(fieldErrors).length) return { fieldErrors, values: { email } };
-  if (!isSupabaseConfigured()) return { error: NOT_CONFIGURED, values: { email } };
 
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return { error: authErrorFr(error.message), values: { email } };
-
-  redirect(next.startsWith("/") && !next.startsWith("//") ? next : "/tableau-de-bord");
+  // Reuse what the merchant entered at sign-up on this device, if any
+  const known = await getRememberedProfile();
+  await startDemoSession(
+    known && known.email === email
+      ? known
+      : {
+          name: nameFromEmail(email),
+          business: "Votre activité",
+          type: "Boutique",
+          email,
+          phone: "",
+          createdAt: new Date().toISOString(),
+        }
+  );
+  redirect(next.startsWith("/tableau-de-bord") ? next : "/tableau-de-bord");
 }
 
-/* ───────────── Mot de passe oublié ───────────── */
+/* ───────────── Mot de passe oublié (démo) ───────────── */
 export async function requestReset(_prev: FormState, fd: FormData): Promise<FormState> {
   const email = str(fd, "email").toLowerCase();
   if (!EMAIL_RE.test(email))
     return { fieldErrors: { email: "Indiquez l'adresse email de votre compte." }, values: { email } };
-  if (!isSupabaseConfigured()) return { error: NOT_CONFIGURED, values: { email } };
-
-  const supabase = await createClient();
-  await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${await siteUrl()}/auth/confirm?next=${encodeURIComponent("/tableau-de-bord?nouveau-mot-de-passe=1")}`,
-  });
-  // Même réponse que le compte existe ou non, pour ne pas révéler les emails inscrits.
   return {
     ok: true,
-    message: `Si un compte existe pour ${email}, un lien pour choisir un nouveau mot de passe vient d'être envoyé.`,
+    message: `Démo : dans la version finale, un lien pour choisir un nouveau mot de passe sera envoyé à ${email}.`,
   };
 }
 
@@ -143,20 +109,13 @@ export async function updatePassword(_prev: FormState, fd: FormData): Promise<Fo
   const password = raw(fd, "password");
   if (!passwordOk(password))
     return { fieldErrors: { password: "Au moins 8 caractères, avec au moins une lettre et un chiffre." } };
-  if (!isSupabaseConfigured()) return { error: NOT_CONFIGURED };
-  const supabase = await createClient();
-  const { error } = await supabase.auth.updateUser({ password });
-  if (error) return { error: authErrorFr(error.message) };
-  return { ok: true, message: "Mot de passe mis à jour." };
+  return { ok: true, message: "Mot de passe mis à jour (démo)." };
 }
 
 /* ───────────── Déconnexion ───────────── */
 export async function signOut() {
-  if (isSupabaseConfigured()) {
-    const supabase = await createClient();
-    await supabase.auth.signOut();
-  }
-  redirect("/");
+  await endDemoSession();
+  redirect("/connexion");
 }
 
 /* ───────────── Contacter le service ───────────── */
