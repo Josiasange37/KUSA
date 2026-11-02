@@ -18,6 +18,78 @@ export function SwipeRow({
 }) {
   const ref = useRef<HTMLElement | null>(null);
   const [hint, setHint] = useState(false);
+  const [count, setCount] = useState(0);
+  const [index, setIndex] = useState(0);
+  const [scrollable, setScrollable] = useState(false);
+  const drag = useRef<{ x: number; left: number; moved: boolean } | null>(null);
+
+  // Track whether the row scrolls (phones) and which card is in front
+  useEffect(() => {
+    const row = ref.current;
+    if (!row) return;
+    const measure = () => {
+      setScrollable(row.scrollWidth > row.clientWidth + 8);
+      setCount(row.children.length);
+    };
+    const onScroll = () => {
+      const first = row.children[0] as HTMLElement | undefined;
+      if (!first) return;
+      const step = first.offsetWidth + parseFloat(getComputedStyle(row).columnGap || "0");
+      const atEnd = row.scrollLeft + row.clientWidth >= row.scrollWidth - 4;
+      setIndex(atEnd ? row.children.length - 1 : Math.round(row.scrollLeft / step));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(row);
+    row.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      ro.disconnect();
+      row.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
+  const goTo = (i: number) => {
+    const row = ref.current;
+    const card = row?.children[i] as HTMLElement | undefined;
+    if (row && card) row.scrollTo({ left: card.offsetLeft - row.offsetLeft - 16, behavior: "smooth" });
+  };
+
+  // Mouse users (desktop browser at phone width): drag to scroll
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType !== "mouse" || !scrollable || !ref.current) return;
+    drag.current = { x: e.clientX, left: ref.current.scrollLeft, moved: false };
+    ref.current.style.scrollSnapType = "none";
+    ref.current.setPointerCapture(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    const d = drag.current;
+    if (!d || !ref.current) return;
+    const dx = e.clientX - d.x;
+    if (Math.abs(dx) > 4) d.moved = true;
+    ref.current.scrollLeft = d.left - dx;
+  };
+  const endDrag = () => {
+    const d = drag.current;
+    if (!d || !ref.current) return;
+    dragMoved.current = d.moved;
+    drag.current = null;
+    // snap to the nearest card from the live position
+    const row = ref.current;
+    const first = row.children[0] as HTMLElement | undefined;
+    const step = first ? first.offsetWidth + parseFloat(getComputedStyle(row).columnGap || "0") : row.clientWidth;
+    const target = Math.max(0, Math.min(row.children.length - 1, Math.round(row.scrollLeft / step)));
+    row.style.scrollSnapType = "";
+    goTo(target);
+  };
+  // A drag must not trigger the card's link
+  const onClickCapture = (e: React.MouseEvent) => {
+    if (dragMoved.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      dragMoved.current = false;
+    }
+  };
+  const dragMoved = useRef(false);
 
   useEffect(() => {
     const row = ref.current;
@@ -66,11 +138,36 @@ export function SwipeRow({
 
   return (
     <div className="relative w-full min-w-0" data-swipe={id}>
-      <Tag ref={ref as React.Ref<never>} className={className}>
+      <Tag
+        ref={ref as React.Ref<never>}
+        className={`${className} ${scrollable ? "cursor-grab active:cursor-grabbing select-none" : ""}`}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onDragStart={(e) => scrollable && e.preventDefault()}
+        onClickCapture={onClickCapture}
+      >
         {children}
       </Tag>
+      {scrollable && count > 1 && (
+        <div className="flex justify-center gap-0.5 pt-1" role="group" aria-label="Position dans la liste">
+          {Array.from({ length: count }, (_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => goTo(i)}
+              aria-label={`Carte ${i + 1} sur ${count}`}
+              aria-current={i === index ? "true" : undefined}
+              className="w-7 h-7 flex items-center justify-center"
+            >
+              <span className={`block h-2 rounded-full transition-all duration-300 ${i === index ? "w-6 bg-gold" : "w-2 bg-line-2"}`} />
+            </button>
+          ))}
+        </div>
+      )}
       {hint && (
-        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center md:hidden" aria-hidden="true">
+        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center" aria-hidden="true">
           <div className="relative w-[200px] h-[120px]">
             {/* gold trail drawn by the finger */}
             <span className="swipe-trail absolute top-[38px] right-[48px] h-[6px] w-[104px] rounded-full bg-gradient-to-l from-[#DBAE40] to-[#DBAE40]/0" />
